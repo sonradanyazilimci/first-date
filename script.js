@@ -12,6 +12,78 @@ function goToScreen(id) {
 }
 
 // ============================================================
+//  0) LİNK KİŞİSELLEŞTİRME — gönderen linke kendi bilgilerini
+//  (sn: adı, sp: WhatsApp no, rn: alıcının adı) URL parametresi
+//  olarak koyar; karşı taraf o linki açtığında burada okunur.
+// ============================================================
+const linkParams = new URLSearchParams(window.location.search);
+const senderName = linkParams.get('sn') || null;
+const senderPhone = linkParams.get('sp') || null;
+const recipientName = linkParams.get('rn') || null;
+
+function personalizeForRecipient() {
+  if (senderName) {
+    const note = document.getElementById('sender-note');
+    note.textContent = `${senderName} sana bir soru soracak 💌`;
+    note.hidden = false;
+  }
+  if (recipientName) {
+    document.getElementById('question-title').textContent = `${recipientName}, benimle çıkar mısın?`;
+  }
+}
+
+function setupLinkGenerator() {
+  const nameInput = document.getElementById('setup-name');
+  const phoneInput = document.getElementById('setup-phone');
+  const recipientInput = document.getElementById('setup-recipient');
+  const errorEl = document.getElementById('setup-error');
+  const resultBox = document.getElementById('setup-result');
+  const linkInput = document.getElementById('generated-link-input');
+  const copyBtn = document.getElementById('btn-copy-link');
+
+  document.getElementById('btn-generate-link').addEventListener('click', () => {
+    const name = nameInput.value.trim();
+    const phone = phoneInput.value.replace(/[^0-9]/g, '');
+    const recipient = recipientInput.value.trim();
+
+    if (!name || phone.length < 10) {
+      errorEl.textContent = 'Adını ve ülke koduyla geçerli bir WhatsApp numarası gir 🙏';
+      resultBox.hidden = true;
+      return;
+    }
+    errorEl.textContent = '';
+
+    const url = new URL(window.location.href);
+    url.search = '';
+    url.searchParams.set('sn', name);
+    url.searchParams.set('sp', phone);
+    if (recipient) url.searchParams.set('rn', recipient);
+
+    linkInput.value = url.toString();
+    resultBox.hidden = false;
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(linkInput.value);
+    } catch (e) {
+      linkInput.removeAttribute('readonly');
+      linkInput.select();
+      document.execCommand('copy');
+      linkInput.setAttribute('readonly', '');
+    }
+    const original = copyBtn.textContent;
+    copyBtn.textContent = 'Kopyalandı ✅';
+    setTimeout(() => { copyBtn.textContent = original; }, 1800);
+  });
+
+  document.getElementById('btn-share-link').addEventListener('click', () => {
+    const text = encodeURIComponent(`Sana bir sorum var 👀 ${linkInput.value}`);
+    window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+  });
+}
+
+// ============================================================
 //  1) ARKA PLANDAKİ SÜZÜLEN KALPLER
 // ============================================================
 function createFloatingHearts() {
@@ -308,12 +380,20 @@ function buildTicket() {
   document.getElementById('ticket-date').textContent = selectedDateText;
   document.getElementById('ticket-time').textContent = `${selectedTimeLabel} (${selectedTime})`;
   document.getElementById('ticket-place').textContent = place;
+
+  // Bilet, gönderene doğrudan haber verilecek şekilde açıldıysa buton metnini ona göre değiştir
+  const waBtn = document.getElementById('btn-whatsapp');
+  waBtn.textContent = senderPhone ? 'Gönderene Haber Ver 📲' : "WhatsApp'tan Bildir 📲";
 }
 
 function buildWhatsappMessage() {
   const place = selectedPlace || 'Sürpriz 🎁';
+  const who = recipientName ? `${recipientName} ` : '';
+  const intro = senderPhone
+    ? `🎉 ${who}sana "Evet" dedi ve buluşma planını onayladı!`
+    : `🎫 RANDEVU BİLETİ`;
   return (
-    `🎫 RANDEVU BİLETİ\n` +
+    `${intro}\n\n` +
     `📆 Tarih: ${selectedDateText}\n` +
     `⏰ Saat: ${selectedTimeLabel} (${selectedTime})\n` +
     `📍 Mekan: ${place}\n\n` +
@@ -345,7 +425,10 @@ document.getElementById('btn-confirm-plan').addEventListener('click', () => {
 
 document.getElementById('btn-whatsapp').addEventListener('click', () => {
   const text = encodeURIComponent(buildWhatsappMessage());
-  window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+  const target = senderPhone
+    ? `https://api.whatsapp.com/send?phone=${senderPhone}&text=${text}`
+    : `https://api.whatsapp.com/send?text=${text}`;
+  window.open(target, '_blank');
 });
 
 document.getElementById('btn-restart').addEventListener('click', () => {
@@ -382,3 +465,13 @@ document.getElementById('btn-restart').addEventListener('click', () => {
 // ============================================================
 createFloatingHearts();
 generateDayPicker();
+setupLinkGenerator();
+
+// Linkte gönderen bilgisi varsa bu bir alıcı ziyaretidir: doğrudan soruya geç.
+// Yoksa önce linki oluşturacak kişiye kurulum ekranını göster.
+if (senderPhone) {
+  personalizeForRecipient();
+  goToScreen('screen-welcome');
+} else {
+  goToScreen('screen-setup');
+}

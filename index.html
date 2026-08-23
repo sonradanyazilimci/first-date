@@ -16,11 +16,47 @@
 
   <main id="app">
 
+    <!-- 0. KURULUM EKRANI (linki oluşturan kişi için) -->
+    <section class="screen" id="screen-setup">
+      <div class="card card-wide">
+        <h1 class="small-title">Önce Sen 💌</h1>
+        <p class="subtitle">Karşı taraf cevaplayınca sana haber verelim</p>
+
+        <div class="field">
+          <label for="setup-name">Adın</label>
+          <input type="text" id="setup-name" placeholder="Örn: Ahmet" maxlength="30" />
+        </div>
+
+        <div class="field">
+          <label for="setup-phone">WhatsApp Numaran</label>
+          <input type="tel" id="setup-phone" placeholder="Örn: 905551234567" maxlength="20" />
+          <p class="field-hint">Başında ülke kodu olsun (90...), boşluk/artı fark etmez</p>
+        </div>
+
+        <div class="field">
+          <label for="setup-recipient">Kime gönderiyorsun? (opsiyonel)</label>
+          <input type="text" id="setup-recipient" placeholder="Örn: Zeynep" maxlength="30" />
+        </div>
+
+        <p class="funny-message" id="setup-error"></p>
+
+        <button class="btn btn-primary" id="btn-generate-link">Linki Oluştur 🔗</button>
+
+        <div class="link-result" id="setup-result" hidden>
+          <label for="generated-link-input">Linkin hazır 🎉</label>
+          <input type="text" id="generated-link-input" readonly />
+          <button class="btn btn-secondary-solid" id="btn-copy-link">Linki Kopyala 📋</button>
+          <button class="btn btn-whatsapp" id="btn-share-link">WhatsApp'tan Gönder 📤</button>
+        </div>
+      </div>
+    </section>
+
     <!-- 1. KARŞILAMA EKRANI -->
-    <section class="screen active" id="screen-welcome">
+    <section class="screen" id="screen-welcome">
       <div class="card">
         <div class="big-emoji bounce">👀</div>
         <h1>Sana çok önemli<br />bir sorum var...</h1>
+        <p class="subtitle" id="sender-note" hidden></p>
         <p class="subtitle">Cevaplamadan önce derin bir nefes al 😌</p>
         <button class="btn btn-primary pulse" id="btn-start">Hazırım 💪</button>
       </div>
@@ -30,7 +66,7 @@
     <section class="screen" id="screen-question">
       <div class="card">
         <div class="big-emoji wiggle" id="question-emoji">💘</div>
-        <h1>Benimle çıkar mısın?</h1>
+        <h1 id="question-title">Benimle çıkar mısın?</h1>
         <p class="funny-message" id="funny-message">&nbsp;</p>
         <div class="button-row" id="button-row">
           <button class="btn btn-yes" id="btn-yes" style="--scale:1">Evet 🥰</button>

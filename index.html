@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+<title>Sana Bir Sorum Var 💌</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Arka planda süzülen kalp/emoji parçacıkları -->
+  <div id="floating-hearts" aria-hidden="true"></div>
+
+  <main id="app">
+
+    <!-- 1. KARŞILAMA EKRANI -->
+    <section class="screen active" id="screen-welcome">
+      <div class="card">
+        <div class="big-emoji bounce">👀</div>
+        <h1>Sana çok önemli<br />bir sorum var...</h1>
+        <p class="subtitle">Cevaplamadan önce derin bir nefes al 😌</p>
+        <button class="btn btn-primary pulse" id="btn-start">Hazırım 💪</button>
+      </div>
+    </section>
+
+    <!-- 2. SORU EKRANI -->
+    <section class="screen" id="screen-question">
+      <div class="card">
+        <div class="big-emoji wiggle" id="question-emoji">💘</div>
+        <h1>Benimle çıkar mısın?</h1>
+        <p class="funny-message" id="funny-message">&nbsp;</p>
+        <div class="button-row" id="button-row">
+          <button class="btn btn-yes" id="btn-yes" style="--scale:1">Evet 🥰</button>
+          <button class="btn btn-no" id="btn-no" style="--scale:1">Hayır 😤</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. EVET EKRANI -->
+    <section class="screen" id="screen-yes">
+      <canvas id="confetti-canvas"></canvas>
+      <div class="card">
+        <div class="dancing-emojis">
+          <span>🎉</span><span>💃</span><span>🕺</span><span>🎊</span>
+        </div>
+        <h1>BİLİYORDUM! 🎊</h1>
+        <p class="subtitle">Kalbim küt küt atıyor şu an 💓</p>
+        <button class="btn btn-primary pulse" id="btn-to-date">Randevuyu Ayarlayalım 📅</button>
+      </div>
+    </section>
+
+    <!-- 4. TARİH / SAAT / MEKAN SEÇİMİ -->
+    <section class="screen" id="screen-plan">
+      <div class="card card-wide">
+        <h1 class="small-title">Hadi Planlayalım 🗓️</h1>
+
+        <h2 class="section-label">Hangi gün? 📆</h2>
+        <div class="day-picker" id="day-picker"></div>
+
+        <h2 class="section-label">Saat kaçta? ⏰</h2>
+        <div class="option-grid" id="time-picker">
+          <button class="option-card" data-time="14:00" data-label="Kahve saati ☕">
+            <span class="option-emoji">☕</span>
+            <span>Kahve saati</span>
+            <span class="option-sub">14:00</span>
+          </button>
+          <button class="option-card" data-time="18:00" data-label="Gün batımı 🌅">
+            <span class="option-emoji">🌅</span>
+            <span>Gün batımı</span>
+            <span class="option-sub">18:00</span>
+          </button>
+          <button class="option-card" data-time="20:00" data-label="Akşam yemeği 🍝">
+            <span class="option-emoji">🍝</span>
+            <span>Akşam yemeği</span>
+            <span class="option-sub">20:00</span>
+          </button>
+        </div>
+
+        <h2 class="section-label">Nereye gidelim? 📍</h2>
+        <div class="option-grid" id="place-picker">
+          <button class="option-card" data-place="Kahve ☕">
+            <span class="option-emoji">☕</span>
+            <span>Kahve</span>
+          </button>
+          <button class="option-card" data-place="Yemek 🍕">
+            <span class="option-emoji">🍕</span>
+            <span>Yemek</span>
+          </button>
+          <button class="option-card" data-place="Sinema 🎬">
+            <span class="option-emoji">🎬</span>
+            <span>Sinema</span>
+          </button>
+          <button class="option-card" data-place="Yürüyüş 🚶">
+            <span class="option-emoji">🚶</span>
+            <span>Yürüyüş</span>
+          </button>
+        </div>
+
+        <button class="btn btn-primary" id="btn-confirm-plan" disabled>Randevuyu Onayla 🎫</button>
+      </div>
+    </section>
+
+    <!-- 5. ONAY / BİLET EKRANI -->
+    <section class="screen" id="screen-ticket">
+      <canvas id="confetti-canvas-2"></canvas>
+      <div class="card">
+        <h1 class="small-title">Randevumuz Ayarlandı! 🥳</h1>
+
+        <div class="ticket">
+          <div class="ticket-header">🎫 RANDEVU BİLETİ</div>
+          <div class="ticket-row"><span>📆 Tarih</span><strong id="ticket-date">-</strong></div>
+          <div class="ticket-row"><span>⏰ Saat</span><strong id="ticket-time">-</strong></div>
+          <div class="ticket-row"><span>📍 Mekan</span><strong id="ticket-place">-</strong></div>
+          <div class="ticket-divider">✂ • • • • • • • • • • • • • • • • • • • • ✂</div>
+          <div class="ticket-footer">İptal edilemez! 😌 Katılım zorunludur 💘</div>
+        </div>
+
+        <button class="btn btn-whatsapp" id="btn-whatsapp">WhatsApp'tan Bildir 📲</button>
+        <button class="btn btn-secondary" id="btn-restart">Baştan Başla 🔄</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

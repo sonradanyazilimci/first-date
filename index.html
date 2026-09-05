@@ -16,7 +16,825 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="style.css" />
+<style>
+/* ---------- Değişkenler: renk temaları ---------- */
+:root {
+  --brand-1: #ff6ec4;
+  --brand-2: #7873f5;
+  --bg-1: #ff9a9e;
+  --bg-2: #fecfef;
+  --bg-3: #a18cd1;
+  --bg-4: #ff9a9e;
+  --bg-5: #fbc2eb;
+
+  --text-strong: #6b2e5f;
+  --text-soft: #8a5a7d;
+  --text-accent: #c7488d;
+  --card-bg: rgba(255, 255, 255, 0.92);
+  --field-bg: #fff8fc;
+  --field-border: #f0d5e6;
+  --pill-bg: #f7eef5;
+  --pill-bg-hover: #fbe0ef;
+  --shadow-color: rgba(120, 40, 100, 0.28);
+}
+
+:root[data-theme-color="sunset"] {
+  --brand-1: #ff9a5a;
+  --brand-2: #ff5e7e;
+  --bg-1: #ffcc70;
+  --bg-2: #ff9a5a;
+  --bg-3: #ff5e7e;
+  --bg-4: #ffcc70;
+  --bg-5: #ff9a5a;
+}
+
+:root[data-theme-color="ocean"] {
+  --brand-1: #22c1c3;
+  --brand-2: #5b86e5;
+  --bg-1: #a1f7ff;
+  --bg-2: #5b86e5;
+  --bg-3: #22c1c3;
+  --bg-4: #a1f7ff;
+  --bg-5: #5b86e5;
+}
+
+:root[data-theme-color="lavender"] {
+  --brand-1: #a18cd1;
+  --brand-2: #fbc2eb;
+  --bg-1: #c3a8f0;
+  --bg-2: #fbc2eb;
+  --bg-3: #a18cd1;
+  --bg-4: #c3a8f0;
+  --bg-5: #fbc2eb;
+}
+
+:root[data-theme-color="mint"] {
+  --brand-1: #2bc48a;
+  --brand-2: #38c9c9;
+  --bg-1: #a8ffce;
+  --bg-2: #43e97b;
+  --bg-3: #38c9c9;
+  --bg-4: #a8ffce;
+  --bg-5: #43e97b;
+}
+
+/* ---------- Karanlık mod ---------- */
+:root[data-mode="dark"] {
+  --text-strong: #f5e6f0;
+  --text-soft: #d9b8cf;
+  --text-accent: #ff9ec4;
+  --card-bg: rgba(32, 22, 38, 0.9);
+  --field-bg: #241a28;
+  --field-border: #4a2f45;
+  --pill-bg: #2c1f2e;
+  --pill-bg-hover: #3a2838;
+  --shadow-color: rgba(0, 0, 0, 0.55);
+  --bg-1: #1b1523;
+  --bg-2: #241b2e;
+  --bg-3: #2d2138;
+  --bg-4: #1b1523;
+  --bg-5: #241b2e;
+}
+
+/* ---------- Temel Ayarlar ---------- */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: 'Baloo 2', system-ui, sans-serif;
+}
+
+body {
+  min-height: 100dvh;
+  background: linear-gradient(-45deg, var(--bg-1), var(--bg-2), var(--bg-3), var(--bg-4), var(--bg-5));
+  background-size: 400% 400%;
+  animation: gradientShift 12s ease infinite;
+  position: relative;
+  transition: background 0.3s ease;
+}
+
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ---------- Erişilebilirlik: klavye odağı ---------- */
+.btn:focus-visible,
+.option-card:focus-visible,
+.day-card:focus-visible,
+.lang-btn:focus-visible,
+.icon-toggle:focus-visible,
+.theme-swatch:focus-visible,
+.field input:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Üst çubuk: dil / tema / ses ---------- */
+.top-bar {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--card-bg);
+  border-radius: 999px;
+  padding: 4px;
+  box-shadow: 0 6px 16px var(--shadow-color);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.top-bar-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--field-border);
+  margin: 0 2px;
+  flex: 0 0 auto;
+}
+
+.icon-toggle {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  border-radius: 999px;
+  padding: 6px 9px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  touch-action: manipulation;
+  line-height: 1;
+}
+
+.icon-toggle:hover {
+  background: var(--pill-bg-hover);
+}
+
+.lang-switcher {
+  display: flex;
+  gap: 4px;
+}
+
+.lang-btn {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  border-radius: 999px;
+  padding: 6px 9px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  touch-action: manipulation;
+}
+
+.lang-btn:hover {
+  background: var(--pill-bg-hover);
+}
+
+.lang-btn.active {
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  color: #fff;
+}
+
+@media (max-width: 460px) {
+  .top-bar { top: 8px; right: 8px; padding: 3px; gap: 2px; }
+  .lang-btn { font-size: 0.6rem; padding: 5px 6px; }
+  .icon-toggle { font-size: 0.82rem; padding: 5px 7px; }
+}
+
+/* ---------- Süzülen kalpler ---------- */
+#floating-hearts {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.floating-heart {
+  position: absolute;
+  bottom: -10%;
+  font-size: 1.5rem;
+  opacity: 0.55;
+  animation-name: floatUp;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  user-select: none;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.4; }
+  100% {
+    transform: translateY(-115vh) translateX(var(--drift, 20px)) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* ---------- Uygulama / Ekran Yönetimi ---------- */
+#app {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.screen {
+  display: none;
+  width: 100%;
+  max-width: 480px;
+}
+
+.screen.active {
+  display: block;
+  animation: slideFadeIn 0.5s ease;
+}
+
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.screen.leaving {
+  animation: slideFadeOut 0.35s ease forwards;
+}
+
+@keyframes slideFadeOut {
+  to {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.97);
+  }
+}
+
+/* ---------- Kart ---------- */
+.card {
+  background: var(--card-bg);
+  border-radius: 32px;
+  padding: 40px 28px;
+  text-align: center;
+  box-shadow: 0 20px 50px var(--shadow-color), 0 2px 8px rgba(0,0,0,0.05);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  position: relative;
+  transition: background 0.3s ease;
+}
+
+.card-wide {
+  max-width: 480px;
+  text-align: left;
+}
+
+h1 {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 800;
+  font-size: 1.8rem;
+  color: var(--text-strong);
+  margin: 8px 0 6px;
+  line-height: 1.25;
+}
+
+h1.small-title {
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.subtitle {
+  color: var(--text-soft);
+  font-size: 1rem;
+  margin: 0 0 24px;
+  font-weight: 600;
+}
+
+.big-emoji {
+  font-size: 4.2rem;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+/* ---------- Butonlar ---------- */
+.btn {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 999px;
+  padding: 16px 28px;
+  cursor: pointer;
+  color: #fff;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  touch-action: manipulation;
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  box-shadow: 0 10px 24px var(--shadow-color);
+  width: 100%;
+  margin-top: 8px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 14px 28px var(--shadow-color);
+}
+
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-soft);
+  box-shadow: none;
+  width: 100%;
+  margin-top: 10px;
+  font-size: 0.95rem;
+}
+
+.btn-secondary-solid {
+  background: var(--pill-bg);
+  color: var(--text-strong);
+  box-shadow: none;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.btn-secondary-solid:hover {
+  background: var(--pill-bg-hover);
+}
+
+/* ---------- Form alanları (kurulum ekranı) ---------- */
+.field {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.field label {
+  display: block;
+  font-weight: 700;
+  color: var(--text-strong);
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.field input {
+  width: 100%;
+  border: 2px solid var(--field-border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 1rem;
+  color: var(--text-strong);
+  background: var(--field-bg);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.field input:focus {
+  border-color: var(--brand-1);
+}
+
+.field-hint {
+  font-size: 0.75rem;
+  color: var(--text-soft);
+  margin: 4px 0 0;
+  font-weight: 600;
+}
+
+.link-result {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.link-result label {
+  display: block;
+  font-weight: 700;
+  color: var(--text-strong);
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.link-result input[readonly] {
+  width: 100%;
+  border: 2px dashed var(--brand-1);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 0.85rem;
+  color: var(--text-strong);
+  background: var(--field-bg);
+  margin-bottom: 4px;
+}
+
+.btn-whatsapp {
+  background: linear-gradient(135deg, #25d366, #128c7e);
+  box-shadow: 0 10px 24px rgba(37, 211, 102, 0.4);
+  width: 100%;
+  margin-top: 20px;
+}
+
+.btn-whatsapp:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* ---------- QR kod ---------- */
+.qr-wrap {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.qr-wrap span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-soft);
+}
+
+.qr-box {
+  background: #fff;
+  padding: 10px;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px var(--shadow-color);
+  line-height: 0;
+}
+
+/* ---------- Şablon ve tema seçici (kurulum ekranı) ---------- */
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.theme-swatches {
+  display: flex;
+  gap: 10px;
+  margin: 0 0 20px;
+  flex-wrap: wrap;
+}
+
+.theme-swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  background: linear-gradient(135deg, var(--swatch-1), var(--swatch-2));
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.theme-swatch:hover {
+  transform: scale(1.08);
+}
+
+.theme-swatch.selected {
+  border-color: var(--text-strong);
+}
+
+/* Evet / Hayır butonları */
+.button-row {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  min-height: 160px;
+  margin-top: 12px;
+}
+
+.btn-yes {
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  box-shadow: 0 10px 24px var(--shadow-color);
+  transform: scale(var(--scale, 1));
+  transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
+  z-index: 2;
+}
+
+.btn-no {
+  background: linear-gradient(135deg, #b0b0c0, #8888a0);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+  transform: scale(var(--scale, 1));
+  transition: transform 0.2s ease, top 0.25s ease, left 0.25s ease;
+  z-index: 2;
+}
+
+.btn-no.escaping {
+  position: fixed;
+  z-index: 9999;
+}
+
+.funny-message {
+  min-height: 28px;
+  font-weight: 700;
+  color: var(--text-accent);
+  font-size: 1.05rem;
+  margin: 6px 0 0;
+}
+
+/* ---------- Animasyonlar: bounce / pulse / wiggle ---------- */
+.bounce {
+  animation: bounce 1.6s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+.pulse {
+  animation: pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.wiggle {
+  animation: wiggle 2s ease-in-out infinite;
+}
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-6deg); }
+  50% { transform: rotate(6deg); }
+}
+
+/* ---------- Dans eden emojiler ---------- */
+.dancing-emojis {
+  font-size: 2.6rem;
+  margin-bottom: 8px;
+}
+.dancing-emojis span {
+  display: inline-block;
+  animation: dance 1s ease-in-out infinite;
+  margin: 0 4px;
+}
+.dancing-emojis span:nth-child(2) { animation-delay: 0.15s; }
+.dancing-emojis span:nth-child(3) { animation-delay: 0.3s; }
+.dancing-emojis span:nth-child(4) { animation-delay: 0.45s; }
+
+@keyframes dance {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-10px) rotate(-10deg); }
+  75% { transform: translateY(-10px) rotate(10deg); }
+}
+
+/* ---------- Konfeti canvas ---------- */
+#confetti-canvas, #confetti-canvas-2 {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ---------- Gün seçici ---------- */
+.section-label {
+  font-size: 1rem;
+  color: var(--text-strong);
+  font-weight: 700;
+  margin: 22px 0 10px;
+}
+
+.day-picker {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+}
+
+.day-card {
+  flex: 0 0 auto;
+  min-width: 66px;
+  background: var(--pill-bg);
+  border: 2px solid transparent;
+  border-radius: 18px;
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  font-family: 'Baloo 2', sans-serif;
+  transition: all 0.15s ease;
+  color: inherit;
+}
+
+.day-card:hover {
+  background: var(--pill-bg-hover);
+}
+
+.day-card .dow {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-soft);
+  text-transform: uppercase;
+}
+
+.day-card .dom {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-strong);
+  margin: 2px 0;
+}
+
+.day-card .mon {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-soft);
+}
+
+.day-card.selected {
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  border-color: var(--brand-1);
+}
+.day-card.selected .dow,
+.day-card.selected .dom,
+.day-card.selected .mon {
+  color: #fff;
+}
+
+/* ---------- Saat / mekan / şablon seçici ---------- */
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+.option-card {
+  background: var(--pill-bg);
+  border: 2px solid transparent;
+  border-radius: 18px;
+  padding: 14px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  color: var(--text-strong);
+  font-size: 0.88rem;
+  transition: all 0.15s ease;
+}
+
+.option-card:hover {
+  background: var(--pill-bg-hover);
+  transform: translateY(-2px);
+}
+
+.option-emoji {
+  font-size: 1.6rem;
+}
+
+.option-sub {
+  font-size: 0.72rem;
+  color: var(--text-soft);
+  font-weight: 600;
+}
+
+.option-card.selected {
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  border-color: var(--brand-1);
+  color: #fff;
+}
+.option-card.selected .option-sub {
+  color: #ffe3f2;
+}
+
+/* ---------- Bilet ---------- */
+.ticket {
+  background: linear-gradient(135deg, var(--field-bg), var(--card-bg));
+  border: 2px dashed var(--brand-1);
+  border-radius: 20px;
+  padding: 20px;
+  margin: 18px 0 10px;
+  text-align: left;
+}
+
+.ticket-header {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-accent);
+  text-align: center;
+  margin-bottom: 14px;
+  letter-spacing: 0.5px;
+}
+
+.ticket-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 0.95rem;
+  color: var(--text-strong);
+}
+
+.ticket-row strong {
+  color: var(--text-accent);
+}
+
+.ticket-divider {
+  text-align: center;
+  color: var(--text-soft);
+  margin: 12px 0;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+}
+
+.ticket-footer {
+  text-align: center;
+  font-weight: 700;
+  color: var(--text-soft);
+  font-size: 0.85rem;
+}
+
+/* ---------- Geri sayım ---------- */
+.countdown {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 4px 0 18px;
+  flex-wrap: wrap;
+}
+
+.countdown-unit {
+  background: var(--pill-bg);
+  border-radius: 14px;
+  padding: 10px 12px;
+  min-width: 56px;
+  text-align: center;
+}
+
+.countdown-num {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-strong);
+}
+
+.countdown-label {
+  display: block;
+  font-size: 0.62rem;
+  color: var(--text-soft);
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* ---------- Mobil uyum ---------- */
+@media (max-width: 420px) {
+  .card { padding: 32px 20px; border-radius: 26px; }
+  h1 { font-size: 1.5rem; }
+  .big-emoji { font-size: 3.4rem; }
+  .btn { font-size: 1rem; padding: 14px 22px; }
+}
+</style>
 </head>
 <body>
 
@@ -166,6 +984,1502 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="script.js"></script>
+  <script>
+// ============================================================
+//  "İlk Randevu Daveti" / "First Date Invitation" — Vanilla JS
+//  Ekran akışı, efektler, çok dilli (TR/EN/FR/DE) destek,
+//  davet şablonları, renk temaları, karanlık mod ve ses efektleri
+// ============================================================
+
+const SUPPORTED_LANGS = ['tr', 'en', 'fr', 'de'];
+const THEME_COLORS = ['pink', 'sunset', 'ocean', 'lavender', 'mint'];
+const TEMPLATE_KEYS = ['date', 'anniversary', 'valentine', 'proposal'];
+
+// JS tarafında sadece önizleme (renk seçici) için — asıl renkler yukarıdaki
+// :root[data-theme-color="..."] bloklarında tanımlı, ikisini birlikte güncel tutun.
+const THEME_SWATCH_COLORS = {
+  pink: ['#ff6ec4', '#7873f5'],
+  sunset: ['#ff9a5a', '#ff5e7e'],
+  ocean: ['#22c1c3', '#5b86e5'],
+  lavender: ['#a18cd1', '#fbc2eb'],
+  mint: ['#2bc48a', '#38c9c9'],
+};
+
+// ============================================================
+//  0) ÇEVİRİLER (i18n) + DAVET ŞABLONLARI
+// ============================================================
+const I18N = {
+  tr: {
+    setupTitle: 'Önce Sen 💌',
+    setupSubtitle: 'Karşı taraf cevaplayınca sana haber verelim',
+    templateLabel: 'Ne için bir davetiye? 💌',
+    themeLabel: 'Renk teman 🎨',
+    nameLabel: 'Adın',
+    namePlaceholder: 'Örn: Ahmet',
+    phoneLabel: 'WhatsApp Numaran',
+    phonePlaceholder: 'Örn: 905551234567',
+    phoneHint: 'Başında ülke kodu olsun (90...), boşluk/artı fark etmez',
+    recipientLabel: 'Kime gönderiyorsun? (opsiyonel)',
+    recipientPlaceholder: 'Örn: Zeynep',
+    generateBtn: 'Linki Oluştur 🔗',
+    linkReadyLabel: 'Linkin hazır 🎉',
+    copyBtn: 'Linki Kopyala 📋',
+    copiedBtn: 'Kopyalandı ✅',
+    shareBtn: "WhatsApp'tan Gönder 📤",
+    qrLabel: 'Ya da QR kodu okutsun 📱',
+    errorMsg: 'Adını ve ülke koduyla geçerli bir WhatsApp numarası gir 🙏',
+    darkModeToggleLabel: 'Karanlık/Aydınlık mod',
+    soundToggleLabel: 'Sesi aç/kapat',
+
+    senderNote: (name) => `${name} sana bir soru soracak 💌`,
+    welcomeSubtitle: 'Cevaplamadan önce derin bir nefes al 😌',
+    startBtn: 'Hazırım 💪',
+    yesBtn: 'Evet 🥰',
+    noBtn: 'Hayır 😤',
+    funnyMessages: [
+      'Emin misin? 🥺',
+      'Bir daha düşün 😏',
+      'Kalbimi kırma 💔',
+      'Kaçamazsın 😈',
+      'Hızlısın ama ben daha hızlıyım 🏃',
+      'Yakalayamayacaksın 😂',
+      "Evet'e basmak zorundasın artık 😂",
+      'Pes etsen mi acaba? 🙈',
+    ],
+
+    toDateBtn: 'Randevuyu Ayarlayalım 📅',
+
+    planTitle: 'Hadi Planlayalım 🗓️',
+    dayLabel: 'Hangi gün? 📆',
+    timeLabel: 'Saat kaçta? ⏰',
+    placeLabel: 'Nereye gidelim? 📍',
+    confirmBtn: 'Randevuyu Onayla 🎫',
+    today: 'Bugün',
+    tomorrow: 'Yarın',
+    dayShort: ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'],
+    dayLong: ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'],
+    monthShort: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
+    monthLong: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
+
+    timeOptions: [
+      { key: 'coffee', time: '14:00', emoji: '☕', name: 'Kahve saati' },
+      { key: 'sunset', time: '18:00', emoji: '🌅', name: 'Gün batımı' },
+      { key: 'dinner', time: '20:00', emoji: '🍝', name: 'Akşam yemeği' },
+    ],
+    placeOptions: [
+      { key: 'coffee', emoji: '☕', name: 'Kahve' },
+      { key: 'food', emoji: '🍕', name: 'Yemek' },
+      { key: 'movie', emoji: '🎬', name: 'Sinema' },
+      { key: 'walk', emoji: '🚶', name: 'Yürüyüş' },
+    ],
+    surprisePlace: 'Sürpriz 🎁',
+
+    templateOptions: [
+      { key: 'date', emoji: '💘', name: 'İlk Randevu' },
+      { key: 'anniversary', emoji: '🎉', name: 'Yıldönümü' },
+      { key: 'valentine', emoji: '💝', name: 'Sevgililer Günü' },
+      { key: 'proposal', emoji: '💍', name: 'Evlilik Teklifi' },
+    ],
+    themeOptions: [
+      { key: 'pink', name: 'Pembe' },
+      { key: 'sunset', name: 'Gün Batımı' },
+      { key: 'ocean', name: 'Okyanus' },
+      { key: 'lavender', name: 'Lavanta' },
+      { key: 'mint', name: 'Nane' },
+    ],
+
+    ticketDateLabel: '📆 Tarih',
+    ticketTimeLabel: '⏰ Saat',
+    ticketPlaceLabel: '📍 Mekan',
+    whatsappNotifyBtn: "WhatsApp'tan Bildir 📲",
+    whatsappNotifySenderBtn: 'Gönderene Haber Ver 📲',
+    downloadTicketBtn: 'Bileti İndir 📸',
+    restartBtn: 'Baştan Başla 🔄',
+    countdownDays: 'Gün',
+    countdownHours: 'Saat',
+    countdownMinutes: 'Dakika',
+    countdownSeconds: 'Saniye',
+    countdownPast: 'Vakit geldi! 🎉',
+
+    waDateLabel: '📆 Tarih',
+    waTimeLabel: '⏰ Saat',
+    waPlaceLabel: '📍 Mekan',
+    waFooter: 'İptal edilemez! 😌 Görüşürüz 💘',
+    waIntroWithSender: (who) => `🎉 ${who}sana "Evet" dedi ve buluşma planını onayladı!`,
+    waShareIntro: (link) => `Sana bir sorum var 👀 ${link}`,
+
+    templates: {
+      date: {
+        pageTitle: 'Sana Bir Sorum Var 💌',
+        welcomeTitle: 'Sana çok önemli<br />bir sorum var...',
+        questionTitleDefault: 'Benimle çıkar mısın?',
+        questionTitleFor: (name) => `${name}, benimle çıkar mısın?`,
+        yesTitle: 'BİLİYORDUM! 🎊',
+        yesSubtitle: 'Kalbim küt küt atıyor şu an 💓',
+        ticketTitle: 'Randevumuz Ayarlandı! 🥳',
+        ticketHeader: '🎫 RANDEVU BİLETİ',
+        ticketFooter: 'İptal edilemez! 😌 Katılım zorunludur 💘',
+        questionEmojiInitial: '💘',
+      },
+      anniversary: {
+        pageTitle: 'Yıldönümümüzü Kutlayalım mı? 🎉',
+        welcomeTitle: 'Sana özel<br />bir teklifim var...',
+        questionTitleDefault: 'Yıldönümümüzü kutlar mısın?',
+        questionTitleFor: (name) => `${name}, yıldönümümüzü kutlar mısın?`,
+        yesTitle: 'HARİKA! 🎉',
+        yesSubtitle: 'Bu yıldönümü unutulmaz olacak 🥳',
+        ticketTitle: 'Kutlamamız Ayarlandı! 🥳',
+        ticketHeader: '🎫 YILDÖNÜMÜ BİLETİ',
+        ticketFooter: 'İptal edilemez! 😌 Katılım zorunludur 🎉',
+        questionEmojiInitial: '🎉',
+      },
+      valentine: {
+        pageTitle: 'Sevgililer Günüm Olur musun? 💝',
+        welcomeTitle: 'Sana özel<br />bir sorum var...',
+        questionTitleDefault: 'Sevgililer günüm olur musun?',
+        questionTitleFor: (name) => `${name}, sevgililer günüm olur musun?`,
+        yesTitle: 'MUTLU OLDUM! 💝',
+        yesSubtitle: 'Kalbim seninle çarpıyor 💓',
+        ticketTitle: 'Buluşmamız Ayarlandı! 🥳',
+        ticketHeader: '🎫 SEVGİLİLER GÜNÜ BİLETİ',
+        ticketFooter: 'İptal edilemez! 😌 Katılım zorunludur 💝',
+        questionEmojiInitial: '💝',
+      },
+      proposal: {
+        pageTitle: 'Sana Çok Önemli Bir Sorum Var 💍',
+        welcomeTitle: 'Hayatımın<br />en önemli sorusu...',
+        questionTitleDefault: 'Benimle evlenir misin?',
+        questionTitleFor: (name) => `${name}, benimle evlenir misin?`,
+        yesTitle: 'EVET DEDİ! 💍',
+        yesSubtitle: 'Bu hayatımın en mutlu anı 🥹',
+        ticketTitle: 'Nişan Planımız Hazır! 🥳',
+        ticketHeader: '🎫 EVLİLİK TEKLİFİ BİLETİ',
+        ticketFooter: 'İptal edilemez! 😌 Katılım zorunludur 💍',
+        questionEmojiInitial: '💍',
+      },
+    },
+  },
+
+  en: {
+    setupTitle: 'First, You 💌',
+    setupSubtitle: "We'll let you know as soon as they answer",
+    templateLabel: 'What kind of invite? 💌',
+    themeLabel: 'Your color theme 🎨',
+    nameLabel: 'Your Name',
+    namePlaceholder: 'e.g. John',
+    phoneLabel: 'Your WhatsApp Number',
+    phonePlaceholder: 'e.g. 15551234567',
+    phoneHint: "Include the country code (1...), spaces or plus signs don't matter",
+    recipientLabel: 'Who are you sending this to? (optional)',
+    recipientPlaceholder: 'e.g. Jane',
+    generateBtn: 'Create Link 🔗',
+    linkReadyLabel: 'Your link is ready 🎉',
+    copyBtn: 'Copy Link 📋',
+    copiedBtn: 'Copied ✅',
+    shareBtn: 'Send via WhatsApp 📤',
+    qrLabel: 'Or scan the QR code 📱',
+    errorMsg: 'Enter your name and a valid WhatsApp number with country code 🙏',
+    darkModeToggleLabel: 'Dark/Light mode',
+    soundToggleLabel: 'Toggle sound',
+
+    senderNote: (name) => `${name} has a question for you 💌`,
+    welcomeSubtitle: 'Take a deep breath before answering 😌',
+    startBtn: "I'm Ready 💪",
+    yesBtn: 'Yes 🥰',
+    noBtn: 'No 😤',
+    funnyMessages: [
+      'Are you sure? 🥺',
+      'Think again 😏',
+      "Don't break my heart 💔",
+      "You can't escape 😈",
+      "You're fast, but I'm faster 🏃",
+      "You'll never catch it 😂",
+      'You have to click Yes now 😂',
+      'Maybe you should just give up? 🙈',
+    ],
+
+    toDateBtn: "Let's Plan the Date 📅",
+
+    planTitle: "Let's Plan It 🗓️",
+    dayLabel: 'Which day? 📆',
+    timeLabel: 'What time? ⏰',
+    placeLabel: 'Where to? 📍',
+    confirmBtn: 'Confirm the Date 🎫',
+    today: 'Today',
+    tomorrow: 'Tomorrow',
+    dayShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    dayLong: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    monthShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    monthLong: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+
+    timeOptions: [
+      { key: 'coffee', time: '14:00', emoji: '☕', name: 'Coffee time' },
+      { key: 'sunset', time: '18:00', emoji: '🌅', name: 'Sunset' },
+      { key: 'dinner', time: '20:00', emoji: '🍝', name: 'Dinner' },
+    ],
+    placeOptions: [
+      { key: 'coffee', emoji: '☕', name: 'Coffee' },
+      { key: 'food', emoji: '🍕', name: 'Food' },
+      { key: 'movie', emoji: '🎬', name: 'Movies' },
+      { key: 'walk', emoji: '🚶', name: 'Walk' },
+    ],
+    surprisePlace: 'Surprise 🎁',
+
+    templateOptions: [
+      { key: 'date', emoji: '💘', name: 'First Date' },
+      { key: 'anniversary', emoji: '🎉', name: 'Anniversary' },
+      { key: 'valentine', emoji: '💝', name: "Valentine's Day" },
+      { key: 'proposal', emoji: '💍', name: 'Marriage Proposal' },
+    ],
+    themeOptions: [
+      { key: 'pink', name: 'Pink' },
+      { key: 'sunset', name: 'Sunset' },
+      { key: 'ocean', name: 'Ocean' },
+      { key: 'lavender', name: 'Lavender' },
+      { key: 'mint', name: 'Mint' },
+    ],
+
+    ticketDateLabel: '📆 Date',
+    ticketTimeLabel: '⏰ Time',
+    ticketPlaceLabel: '📍 Place',
+    whatsappNotifyBtn: 'Notify via WhatsApp 📲',
+    whatsappNotifySenderBtn: 'Notify Sender 📲',
+    downloadTicketBtn: 'Download Ticket 📸',
+    restartBtn: 'Start Over 🔄',
+    countdownDays: 'Days',
+    countdownHours: 'Hours',
+    countdownMinutes: 'Minutes',
+    countdownSeconds: 'Seconds',
+    countdownPast: "It's time! 🎉",
+
+    waDateLabel: '📆 Date',
+    waTimeLabel: '⏰ Time',
+    waPlaceLabel: '📍 Place',
+    waFooter: 'No cancellations! 😌 See you there 💘',
+    waIntroWithSender: (who) => `🎉 ${who}said "Yes" and confirmed the plan!`,
+    waShareIntro: (link) => `I have a question for you 👀 ${link}`,
+
+    templates: {
+      date: {
+        pageTitle: 'I Have a Question For You 💌',
+        welcomeTitle: 'I have a very<br />important question for you...',
+        questionTitleDefault: 'Will you go on a date with me?',
+        questionTitleFor: (name) => `${name}, will you go on a date with me?`,
+        yesTitle: 'I KNEW IT! 🎊',
+        yesSubtitle: 'My heart is racing right now 💓',
+        ticketTitle: 'Our Date is Set! 🥳',
+        ticketHeader: '🎫 DATE TICKET',
+        ticketFooter: 'No cancellations! 😌 Attendance is mandatory 💘',
+        questionEmojiInitial: '💘',
+      },
+      anniversary: {
+        pageTitle: 'Will You Celebrate With Me? 🎉',
+        welcomeTitle: 'I have a special<br />question for you...',
+        questionTitleDefault: 'Will you celebrate our anniversary with me?',
+        questionTitleFor: (name) => `${name}, will you celebrate our anniversary with me?`,
+        yesTitle: 'AMAZING! 🎉',
+        yesSubtitle: 'This anniversary will be unforgettable 🥳',
+        ticketTitle: 'Our Celebration is Set! 🥳',
+        ticketHeader: '🎫 ANNIVERSARY TICKET',
+        ticketFooter: 'No cancellations! 😌 Attendance is mandatory 🎉',
+        questionEmojiInitial: '🎉',
+      },
+      valentine: {
+        pageTitle: 'Will You Be My Valentine? 💝',
+        welcomeTitle: 'I have a special<br />question for you...',
+        questionTitleDefault: 'Will you be my Valentine?',
+        questionTitleFor: (name) => `${name}, will you be my Valentine?`,
+        yesTitle: "I'M SO HAPPY! 💝",
+        yesSubtitle: 'My heart beats for you 💓',
+        ticketTitle: 'Our Date is Set! 🥳',
+        ticketHeader: '🎫 VALENTINE TICKET',
+        ticketFooter: 'No cancellations! 😌 Attendance is mandatory 💝',
+        questionEmojiInitial: '💝',
+      },
+      proposal: {
+        pageTitle: 'I Have a Very Important Question 💍',
+        welcomeTitle: 'The most important<br />question of my life...',
+        questionTitleDefault: 'Will you marry me?',
+        questionTitleFor: (name) => `${name}, will you marry me?`,
+        yesTitle: 'SHE SAID YES! 💍',
+        yesSubtitle: 'The happiest moment of my life 🥹',
+        ticketTitle: 'Our Plan is Set! 🥳',
+        ticketHeader: '🎫 PROPOSAL TICKET',
+        ticketFooter: 'No cancellations! 😌 Attendance is mandatory 💍',
+        questionEmojiInitial: '💍',
+      },
+    },
+  },
+
+  fr: {
+    setupTitle: "D'abord, toi 💌",
+    setupSubtitle: 'On te prévient dès que la personne répond',
+    templateLabel: "Quel type d'invitation ? 💌",
+    themeLabel: 'Ta palette de couleurs 🎨',
+    nameLabel: 'Ton prénom',
+    namePlaceholder: 'Ex : Antoine',
+    phoneLabel: 'Ton numéro WhatsApp',
+    phonePlaceholder: 'Ex : 33612345678',
+    phoneHint: "Indique l'indicatif du pays (33...), espaces et signe + sans importance",
+    recipientLabel: 'À qui envoies-tu ceci ? (facultatif)',
+    recipientPlaceholder: 'Ex : Camille',
+    generateBtn: 'Créer le lien 🔗',
+    linkReadyLabel: 'Ton lien est prêt 🎉',
+    copyBtn: 'Copier le lien 📋',
+    copiedBtn: 'Copié ✅',
+    shareBtn: 'Envoyer via WhatsApp 📤',
+    qrLabel: 'Ou scanne le QR code 📱',
+    errorMsg: "Entre ton prénom et un numéro WhatsApp valide avec l'indicatif du pays 🙏",
+    darkModeToggleLabel: 'Mode sombre/clair',
+    soundToggleLabel: 'Activer/couper le son',
+
+    senderNote: (name) => `${name} a une question pour toi 💌`,
+    welcomeSubtitle: 'Respire un grand coup avant de répondre 😌',
+    startBtn: 'Je suis prêt(e) 💪',
+    yesBtn: 'Oui 🥰',
+    noBtn: 'Non 😤',
+    funnyMessages: [
+      "T'es sûr(e) ? 🥺",
+      'Réfléchis encore 😏',
+      'Ne brise pas mon cœur 💔',
+      "Tu ne peux pas t'échapper 😈",
+      "T'es rapide, mais je le suis plus 🏃",
+      "Tu ne l'attraperas jamais 😂",
+      'Tu dois cliquer sur Oui maintenant 😂',
+      'Et si tu abandonnais ? 🙈',
+    ],
+
+    toDateBtn: 'Planifions le rendez-vous 📅',
+
+    planTitle: 'On planifie ça 🗓️',
+    dayLabel: 'Quel jour ? 📆',
+    timeLabel: 'À quelle heure ? ⏰',
+    placeLabel: 'On va où ? 📍',
+    confirmBtn: 'Confirmer le rendez-vous 🎫',
+    today: "Aujourd'hui",
+    tomorrow: 'Demain',
+    dayShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+    dayLong: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+    monthShort: ['Janv', 'Févr', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'],
+    monthLong: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+
+    timeOptions: [
+      { key: 'coffee', time: '14:00', emoji: '☕', name: 'Heure du café' },
+      { key: 'sunset', time: '18:00', emoji: '🌅', name: 'Coucher de soleil' },
+      { key: 'dinner', time: '20:00', emoji: '🍝', name: 'Dîner' },
+    ],
+    placeOptions: [
+      { key: 'coffee', emoji: '☕', name: 'Café' },
+      { key: 'food', emoji: '🍕', name: 'Repas' },
+      { key: 'movie', emoji: '🎬', name: 'Cinéma' },
+      { key: 'walk', emoji: '🚶', name: 'Balade' },
+    ],
+    surprisePlace: 'Surprise 🎁',
+
+    templateOptions: [
+      { key: 'date', emoji: '💘', name: 'Premier rendez-vous' },
+      { key: 'anniversary', emoji: '🎉', name: 'Anniversaire' },
+      { key: 'valentine', emoji: '💝', name: 'Saint-Valentin' },
+      { key: 'proposal', emoji: '💍', name: 'Demande en mariage' },
+    ],
+    themeOptions: [
+      { key: 'pink', name: 'Rose' },
+      { key: 'sunset', name: 'Coucher de soleil' },
+      { key: 'ocean', name: 'Océan' },
+      { key: 'lavender', name: 'Lavande' },
+      { key: 'mint', name: 'Menthe' },
+    ],
+
+    ticketDateLabel: '📆 Date',
+    ticketTimeLabel: '⏰ Heure',
+    ticketPlaceLabel: '📍 Lieu',
+    whatsappNotifyBtn: 'Notifier via WhatsApp 📲',
+    whatsappNotifySenderBtn: "Prévenir l'expéditeur 📲",
+    downloadTicketBtn: 'Télécharger le billet 📸',
+    restartBtn: 'Recommencer 🔄',
+    countdownDays: 'Jours',
+    countdownHours: 'Heures',
+    countdownMinutes: 'Minutes',
+    countdownSeconds: 'Secondes',
+    countdownPast: "C'est l'heure ! 🎉",
+
+    waDateLabel: '📆 Date',
+    waTimeLabel: '⏰ Heure',
+    waPlaceLabel: '📍 Lieu',
+    waFooter: 'Aucune annulation ! 😌 À bientôt 💘',
+    waIntroWithSender: (who) => `🎉 ${who}a dit "Oui" et a confirmé le plan !`,
+    waShareIntro: (link) => `J'ai une question pour toi 👀 ${link}`,
+
+    templates: {
+      date: {
+        pageTitle: "J'ai une question pour toi 💌",
+        welcomeTitle: "J'ai une question<br />très importante pour toi...",
+        questionTitleDefault: 'Veux-tu sortir avec moi ?',
+        questionTitleFor: (name) => `${name}, veux-tu sortir avec moi ?`,
+        yesTitle: 'JE LE SAVAIS ! 🎊',
+        yesSubtitle: 'Mon cœur bat la chamade là 💓',
+        ticketTitle: 'Notre rendez-vous est fixé ! 🥳',
+        ticketHeader: '🎫 BILLET DE RENDEZ-VOUS',
+        ticketFooter: 'Aucune annulation ! 😌 Présence obligatoire 💘',
+        questionEmojiInitial: '💘',
+      },
+      anniversary: {
+        pageTitle: 'Fêtons Notre Anniversaire ? 🎉',
+        welcomeTitle: "J'ai une question<br />spéciale pour toi...",
+        questionTitleDefault: 'Veux-tu fêter notre anniversaire avec moi ?',
+        questionTitleFor: (name) => `${name}, veux-tu fêter notre anniversaire avec moi ?`,
+        yesTitle: 'GÉNIAL ! 🎉',
+        yesSubtitle: 'Cet anniversaire sera inoubliable 🥳',
+        ticketTitle: 'Notre célébration est fixée ! 🥳',
+        ticketHeader: "🎫 BILLET D'ANNIVERSAIRE",
+        ticketFooter: 'Aucune annulation ! 😌 Présence obligatoire 🎉',
+        questionEmojiInitial: '🎉',
+      },
+      valentine: {
+        pageTitle: 'Veux-tu Être Mon Valentin(e) ? 💝',
+        welcomeTitle: "J'ai une question<br />spéciale pour toi...",
+        questionTitleDefault: 'Veux-tu être mon valentin(e) ?',
+        questionTitleFor: (name) => `${name}, veux-tu être mon valentin(e) ?`,
+        yesTitle: 'JE SUIS RAVI(E) ! 💝',
+        yesSubtitle: 'Mon cœur bat pour toi 💓',
+        ticketTitle: 'Notre rendez-vous est fixé ! 🥳',
+        ticketHeader: '🎫 BILLET DE SAINT-VALENTIN',
+        ticketFooter: 'Aucune annulation ! 😌 Présence obligatoire 💝',
+        questionEmojiInitial: '💝',
+      },
+      proposal: {
+        pageTitle: "J'ai une question très importante 💍",
+        welcomeTitle: 'La question la plus<br />importante de ma vie...',
+        questionTitleDefault: "Veux-tu m'épouser ?",
+        questionTitleFor: (name) => `${name}, veux-tu m'épouser ?`,
+        yesTitle: 'ELLE A DIT OUI ! 💍',
+        yesSubtitle: 'Le moment le plus heureux de ma vie 🥹',
+        ticketTitle: 'Notre plan est fixé ! 🥳',
+        ticketHeader: '🎫 BILLET DE DEMANDE EN MARIAGE',
+        ticketFooter: 'Aucune annulation ! 😌 Présence obligatoire 💍',
+        questionEmojiInitial: '💍',
+      },
+    },
+  },
+
+  de: {
+    setupTitle: 'Zuerst du 💌',
+    setupSubtitle: 'Wir sagen dir Bescheid, sobald geantwortet wird',
+    templateLabel: 'Welche Art Einladung? 💌',
+    themeLabel: 'Deine Farbwahl 🎨',
+    nameLabel: 'Dein Name',
+    namePlaceholder: 'z. B. Max',
+    phoneLabel: 'Deine WhatsApp-Nummer',
+    phonePlaceholder: 'z. B. 4915123456789',
+    phoneHint: 'Mit Landesvorwahl (49...), Leerzeichen/Plus spielen keine Rolle',
+    recipientLabel: 'An wen schickst du das? (optional)',
+    recipientPlaceholder: 'z. B. Anna',
+    generateBtn: 'Link erstellen 🔗',
+    linkReadyLabel: 'Dein Link ist fertig 🎉',
+    copyBtn: 'Link kopieren 📋',
+    copiedBtn: 'Kopiert ✅',
+    shareBtn: 'Über WhatsApp senden 📤',
+    qrLabel: 'Oder QR-Code scannen 📱',
+    errorMsg: 'Gib deinen Namen und eine gültige WhatsApp-Nummer mit Landesvorwahl ein 🙏',
+    darkModeToggleLabel: 'Dunkler/Heller Modus',
+    soundToggleLabel: 'Ton ein/aus',
+
+    senderNote: (name) => `${name} hat eine Frage an dich 💌`,
+    welcomeSubtitle: 'Atme tief durch, bevor du antwortest 😌',
+    startBtn: 'Ich bin bereit 💪',
+    yesBtn: 'Ja 🥰',
+    noBtn: 'Nein 😤',
+    funnyMessages: [
+      'Bist du sicher? 🥺',
+      'Denk nochmal nach 😏',
+      'Brich mir nicht das Herz 💔',
+      'Du kannst nicht entkommen 😈',
+      'Du bist schnell, aber ich bin schneller 🏃',
+      'Du wirst ihn nie erwischen 😂',
+      'Du musst jetzt auf Ja klicken 😂',
+      'Vielleicht solltest du einfach aufgeben? 🙈',
+    ],
+
+    toDateBtn: 'Lass uns das Date planen 📅',
+
+    planTitle: 'Lass uns planen 🗓️',
+    dayLabel: 'Welcher Tag? 📆',
+    timeLabel: 'Wie spät? ⏰',
+    placeLabel: 'Wohin gehen wir? 📍',
+    confirmBtn: 'Date bestätigen 🎫',
+    today: 'Heute',
+    tomorrow: 'Morgen',
+    dayShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+    dayLong: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+    monthShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+    monthLong: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+
+    timeOptions: [
+      { key: 'coffee', time: '14:00', emoji: '☕', name: 'Kaffeezeit' },
+      { key: 'sunset', time: '18:00', emoji: '🌅', name: 'Sonnenuntergang' },
+      { key: 'dinner', time: '20:00', emoji: '🍝', name: 'Abendessen' },
+    ],
+    placeOptions: [
+      { key: 'coffee', emoji: '☕', name: 'Kaffee' },
+      { key: 'food', emoji: '🍕', name: 'Essen' },
+      { key: 'movie', emoji: '🎬', name: 'Kino' },
+      { key: 'walk', emoji: '🚶', name: 'Spaziergang' },
+    ],
+    surprisePlace: 'Überraschung 🎁',
+
+    templateOptions: [
+      { key: 'date', emoji: '💘', name: 'Erstes Date' },
+      { key: 'anniversary', emoji: '🎉', name: 'Jahrestag' },
+      { key: 'valentine', emoji: '💝', name: 'Valentinstag' },
+      { key: 'proposal', emoji: '💍', name: 'Heiratsantrag' },
+    ],
+    themeOptions: [
+      { key: 'pink', name: 'Pink' },
+      { key: 'sunset', name: 'Sonnenuntergang' },
+      { key: 'ocean', name: 'Ozean' },
+      { key: 'lavender', name: 'Lavendel' },
+      { key: 'mint', name: 'Minze' },
+    ],
+
+    ticketDateLabel: '📆 Datum',
+    ticketTimeLabel: '⏰ Uhrzeit',
+    ticketPlaceLabel: '📍 Ort',
+    whatsappNotifyBtn: 'Per WhatsApp benachrichtigen 📲',
+    whatsappNotifySenderBtn: 'Absender benachrichtigen 📲',
+    downloadTicketBtn: 'Ticket herunterladen 📸',
+    restartBtn: 'Neu starten 🔄',
+    countdownDays: 'Tage',
+    countdownHours: 'Stunden',
+    countdownMinutes: 'Minuten',
+    countdownSeconds: 'Sekunden',
+    countdownPast: 'Es ist Zeit! 🎉',
+
+    waDateLabel: '📆 Datum',
+    waTimeLabel: '⏰ Uhrzeit',
+    waPlaceLabel: '📍 Ort',
+    waFooter: 'Keine Absage möglich! 😌 Bis dann 💘',
+    waIntroWithSender: (who) => `🎉 ${who}hat "Ja" gesagt und den Plan bestätigt!`,
+    waShareIntro: (link) => `Ich habe eine Frage an dich 👀 ${link}`,
+
+    templates: {
+      date: {
+        pageTitle: 'Ich habe eine Frage an dich 💌',
+        welcomeTitle: 'Ich habe eine sehr<br />wichtige Frage an dich...',
+        questionTitleDefault: 'Gehst du mit mir aus?',
+        questionTitleFor: (name) => `${name}, gehst du mit mir aus?`,
+        yesTitle: 'ICH WUSSTE ES! 🎊',
+        yesSubtitle: 'Mein Herz rast gerade 💓',
+        ticketTitle: 'Unser Date steht! 🥳',
+        ticketHeader: '🎫 DATE-TICKET',
+        ticketFooter: 'Keine Absage möglich! 😌 Teilnahme verpflichtend 💘',
+        questionEmojiInitial: '💘',
+      },
+      anniversary: {
+        pageTitle: 'Feiern Wir Unseren Jahrestag? 🎉',
+        welcomeTitle: 'Ich habe eine besondere<br />Frage an dich...',
+        questionTitleDefault: 'Feierst du unseren Jahrestag mit mir?',
+        questionTitleFor: (name) => `${name}, feierst du unseren Jahrestag mit mir?`,
+        yesTitle: 'FANTASTISCH! 🎉',
+        yesSubtitle: 'Dieser Jahrestag wird unvergesslich 🥳',
+        ticketTitle: 'Unsere Feier steht! 🥳',
+        ticketHeader: '🎫 JAHRESTAG-TICKET',
+        ticketFooter: 'Keine Absage möglich! 😌 Teilnahme verpflichtend 🎉',
+        questionEmojiInitial: '🎉',
+      },
+      valentine: {
+        pageTitle: 'Willst Du Mein Valentinstag Sein? 💝',
+        welcomeTitle: 'Ich habe eine besondere<br />Frage an dich...',
+        questionTitleDefault: 'Willst du mein Valentinstag sein?',
+        questionTitleFor: (name) => `${name}, willst du mein Valentinstag sein?`,
+        yesTitle: 'ICH FREUE MICH SO! 💝',
+        yesSubtitle: 'Mein Herz schlägt für dich 💓',
+        ticketTitle: 'Unser Date steht! 🥳',
+        ticketHeader: '🎫 VALENTINSTAG-TICKET',
+        ticketFooter: 'Keine Absage möglich! 😌 Teilnahme verpflichtend 💝',
+        questionEmojiInitial: '💝',
+      },
+      proposal: {
+        pageTitle: 'Ich habe eine sehr wichtige Frage 💍',
+        welcomeTitle: 'Die wichtigste Frage<br />meines Lebens...',
+        questionTitleDefault: 'Willst du mich heiraten?',
+        questionTitleFor: (name) => `${name}, willst du mich heiraten?`,
+        yesTitle: 'SIE HAT JA GESAGT! 💍',
+        yesSubtitle: 'Der glücklichste Moment meines Lebens 🥹',
+        ticketTitle: 'Unser Plan steht! 🥳',
+        ticketHeader: '🎫 HEIRATSANTRAG-TICKET',
+        ticketFooter: 'Keine Absage möglich! 😌 Teilnahme verpflichtend 💍',
+        questionEmojiInitial: '💍',
+      },
+    },
+  },
+};
+
+function detectInitialLang() {
+  const fromUrl = linkParamsRaw.get('lg');
+  if (fromUrl && SUPPORTED_LANGS.includes(fromUrl)) return fromUrl;
+  try {
+    const fromStorage = localStorage.getItem('fd_lang');
+    if (fromStorage && SUPPORTED_LANGS.includes(fromStorage)) return fromStorage;
+  } catch (e) { /* localStorage kapalı olabilir (gizli sekme vb.) */ }
+  const nav = ((navigator.language || 'en').slice(0, 2)).toLowerCase();
+  return SUPPORTED_LANGS.includes(nav) ? nav : 'en';
+}
+
+function detectInitialTemplate() {
+  const fromUrl = linkParamsRaw.get('tp');
+  return (fromUrl && TEMPLATE_KEYS.includes(fromUrl)) ? fromUrl : 'date';
+}
+
+function detectInitialThemeColor() {
+  const fromUrl = linkParamsRaw.get('th');
+  if (fromUrl && THEME_COLORS.includes(fromUrl)) return fromUrl;
+  try {
+    const fromStorage = localStorage.getItem('fd_theme');
+    if (fromStorage && THEME_COLORS.includes(fromStorage)) return fromStorage;
+  } catch (e) { /* yoksay */ }
+  return 'pink';
+}
+
+function detectInitialMode() {
+  try {
+    const stored = localStorage.getItem('fd_mode');
+    if (stored === 'dark' || stored === 'light') return stored;
+  } catch (e) { /* yoksay */ }
+  return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+}
+
+function detectInitialSound() {
+  try {
+    if (localStorage.getItem('fd_sound') === 'off') return false;
+  } catch (e) { /* yoksay */ }
+  return true;
+}
+
+function t(key) {
+  const dict = I18N[currentLang] || I18N.en;
+  const tmpl = dict.templates && dict.templates[currentTemplate];
+  if (tmpl && key in tmpl) return tmpl[key];
+  return dict[key];
+}
+
+// ---------- Ekranlar arası geçiş ----------
+function goToScreen(id) {
+  const current = document.querySelector('.screen.active');
+  const next = document.getElementById(id);
+  if (current === next) return;
+  if (current) current.classList.remove('active');
+  next.classList.add('active');
+}
+
+// ============================================================
+//  1) LİNK KİŞİSELLEŞTİRME — gönderen linke kendi bilgilerini
+//  (sn, sp, rn, lg: dil, tp: davet şablonu, th: renk teması) URL
+//  parametresi olarak koyar; karşı taraf o linki açtığında burada okunur.
+// ============================================================
+const linkParamsRaw = new URLSearchParams(window.location.search);
+const senderName = linkParamsRaw.get('sn') || null;
+const senderPhone = linkParamsRaw.get('sp') || null;
+const recipientName = linkParamsRaw.get('rn') || null;
+
+let currentLang = detectInitialLang();
+let currentTemplate = detectInitialTemplate();
+let currentThemeColor = detectInitialThemeColor();
+let currentMode = detectInitialMode();
+let soundEnabled = detectInitialSound();
+
+function renderQuestionTitle() {
+  const title = document.getElementById('question-title');
+  title.textContent = recipientName ? t('questionTitleFor')(recipientName) : t('questionTitleDefault');
+  const emoji = document.getElementById('question-emoji');
+  if (!btnNo || !btnNo.classList.contains('escaping')) {
+    emoji.textContent = t('questionEmojiInitial');
+  }
+}
+
+function personalizeForRecipient() {
+  if (senderName) {
+    const note = document.getElementById('sender-note');
+    note.textContent = t('senderNote') ? t('senderNote')(senderName) : '';
+    note.hidden = !senderName;
+  }
+  renderQuestionTitle();
+}
+
+// ============================================================
+//  2) GÖRÜNÜM: DİL / ŞABLON / TEMA / KARANLIK MOD / SES
+// ============================================================
+function setLang(lang) {
+  if (!SUPPORTED_LANGS.includes(lang)) return;
+  currentLang = lang;
+  try { localStorage.setItem('fd_lang', lang); } catch (e) { /* yoksay */ }
+  applyTranslations();
+}
+
+function setTemplate(key) {
+  if (!TEMPLATE_KEYS.includes(key)) return;
+  currentTemplate = key;
+  applyTranslations();
+}
+
+function setThemeColor(key) {
+  if (!THEME_COLORS.includes(key)) return;
+  currentThemeColor = key;
+  try { localStorage.setItem('fd_theme', key); } catch (e) { /* yoksay */ }
+  applyThemeColor();
+  renderThemePicker();
+}
+
+function applyThemeColor() {
+  document.documentElement.dataset.themeColor = currentThemeColor;
+}
+
+function applyMode() {
+  document.documentElement.dataset.mode = currentMode;
+  const btn = document.getElementById('btn-dark-toggle');
+  btn.textContent = currentMode === 'dark' ? '☀️' : '🌙';
+  btn.setAttribute('aria-pressed', currentMode === 'dark' ? 'true' : 'false');
+}
+
+function toggleMode() {
+  currentMode = currentMode === 'dark' ? 'light' : 'dark';
+  try { localStorage.setItem('fd_mode', currentMode); } catch (e) { /* yoksay */ }
+  applyMode();
+}
+
+function applySoundUI() {
+  const btn = document.getElementById('btn-sound-toggle');
+  btn.textContent = soundEnabled ? '🔊' : '🔇';
+  btn.setAttribute('aria-pressed', soundEnabled ? 'true' : 'false');
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  try { localStorage.setItem('fd_sound', soundEnabled ? 'on' : 'off'); } catch (e) { /* yoksay */ }
+  applySoundUI();
+  if (soundEnabled) playTone(660, 0.08, 'sine', 0.05);
+}
+
+function updateLangSwitcherUI() {
+  document.querySelectorAll('.lang-btn').forEach((btn) => {
+    const active = btn.dataset.lang === currentLang;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+}
+
+function renderTemplatePicker() {
+  const wrap = document.getElementById('template-picker');
+  wrap.innerHTML = '';
+  t('templateOptions').forEach((opt) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'option-card';
+    if (opt.key === currentTemplate) btn.classList.add('selected');
+    btn.setAttribute('aria-pressed', opt.key === currentTemplate ? 'true' : 'false');
+    btn.innerHTML = `<span class="option-emoji">${opt.emoji}</span><span>${opt.name}</span>`;
+    btn.addEventListener('click', () => { playClick(); setTemplate(opt.key); });
+    wrap.appendChild(btn);
+  });
+}
+
+function renderThemePicker() {
+  const wrap = document.getElementById('theme-picker');
+  wrap.innerHTML = '';
+  t('themeOptions').forEach((opt) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'theme-swatch';
+    if (opt.key === currentThemeColor) btn.classList.add('selected');
+    btn.setAttribute('aria-pressed', opt.key === currentThemeColor ? 'true' : 'false');
+    btn.setAttribute('aria-label', opt.name);
+    btn.title = opt.name;
+    const colors = THEME_SWATCH_COLORS[opt.key] || THEME_SWATCH_COLORS.pink;
+    btn.style.setProperty('--swatch-1', colors[0]);
+    btn.style.setProperty('--swatch-2', colors[1]);
+    btn.addEventListener('click', () => { playClick(); setThemeColor(opt.key); });
+    wrap.appendChild(btn);
+  });
+}
+
+function setupTopBarToggles() {
+  document.getElementById('btn-dark-toggle').addEventListener('click', toggleMode);
+  document.getElementById('btn-sound-toggle').addEventListener('click', toggleSound);
+  document.querySelectorAll('.lang-btn').forEach((btn) => {
+    btn.addEventListener('click', () => { playClick(); setLang(btn.dataset.lang); });
+  });
+}
+
+function applyTranslations() {
+  document.documentElement.lang = currentLang;
+  document.title = t('pageTitle');
+
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    const val = t(el.getAttribute('data-i18n'));
+    if (typeof val === 'string') el.textContent = val;
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach((el) => {
+    const val = t(el.getAttribute('data-i18n-html'));
+    if (typeof val === 'string') el.innerHTML = val;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+    const val = t(el.getAttribute('data-i18n-placeholder'));
+    if (typeof val === 'string') el.placeholder = val;
+  });
+
+  document.getElementById('btn-dark-toggle').setAttribute('aria-label', t('darkModeToggleLabel'));
+  document.getElementById('btn-sound-toggle').setAttribute('aria-label', t('soundToggleLabel'));
+
+  personalizeForRecipient();
+  updateLangSwitcherUI();
+  renderTemplatePicker();
+  renderThemePicker();
+  generateDayPicker();
+  renderTimePicker();
+  renderPlacePicker();
+
+  // Bilet zaten oluşturulmuşsa (kullanıcı bilet ekranındayken dil/şablon değiştirirse)
+  // görüntülenen tarih/saat/mekan metnini de yeni dile göre tazele
+  if (selectedDateText && selectedTimeKey) buildTicket();
+}
+
+function setupLinkGenerator() {
+  const nameInput = document.getElementById('setup-name');
+  const phoneInput = document.getElementById('setup-phone');
+  const recipientInput = document.getElementById('setup-recipient');
+  const errorEl = document.getElementById('setup-error');
+  const resultBox = document.getElementById('setup-result');
+  const linkInput = document.getElementById('generated-link-input');
+  const copyBtn = document.getElementById('btn-copy-link');
+
+  document.getElementById('btn-generate-link').addEventListener('click', () => {
+    playClick();
+    const name = nameInput.value.trim();
+    const phone = phoneInput.value.replace(/[^0-9]/g, '');
+    const recipient = recipientInput.value.trim();
+
+    if (!name || phone.length < 10) {
+      errorEl.textContent = t('errorMsg');
+      resultBox.hidden = true;
+      return;
+    }
+    errorEl.textContent = '';
+
+    const url = new URL(window.location.href);
+    url.search = '';
+    url.searchParams.set('sn', name);
+    url.searchParams.set('sp', phone);
+    if (recipient) url.searchParams.set('rn', recipient);
+    url.searchParams.set('lg', currentLang);
+    url.searchParams.set('tp', currentTemplate);
+    url.searchParams.set('th', currentThemeColor);
+
+    linkInput.value = url.toString();
+    resultBox.hidden = false;
+    renderQRCode(url.toString());
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    playClick();
+    try {
+      await navigator.clipboard.writeText(linkInput.value);
+    } catch (e) {
+      linkInput.removeAttribute('readonly');
+      linkInput.select();
+      document.execCommand('copy');
+      linkInput.setAttribute('readonly', '');
+    }
+    copyBtn.textContent = t('copiedBtn');
+    setTimeout(() => { copyBtn.textContent = t('copyBtn'); }, 1800);
+  });
+
+  document.getElementById('btn-share-link').addEventListener('click', () => {
+    playClick();
+    const text = encodeURIComponent(t('waShareIntro')(linkInput.value));
+    window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+  });
+}
+
+function renderQRCode(url) {
+  const box = document.getElementById('qr-code');
+  box.innerHTML = '';
+  if (typeof QRCode === 'undefined') return;
+  new QRCode(box, {
+    text: url,
+    width: 120,
+    height: 120,
+    colorDark: '#3a1f35',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M,
+  });
+}
+
+// ============================================================
+//  3) SES EFEKTLERİ (Web Audio API — harici ses dosyası yok)
+// ============================================================
+let audioCtx = null;
+
+function getAudioCtx() {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return null;
+  if (!audioCtx) audioCtx = new AC();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function playTone(freq, duration, type, volume) {
+  if (!soundEnabled) return;
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type || 'sine';
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(volume || 0.06, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start();
+  osc.stop(ctx.currentTime + duration);
+}
+
+function playClick() {
+  playTone(520, 0.07, 'triangle', 0.05);
+}
+
+function playEscape() {
+  playTone(300, 0.09, 'sawtooth', 0.04);
+}
+
+function playYesChime() {
+  playTone(523, 0.1, 'sine', 0.06);
+  setTimeout(() => playTone(659, 0.1, 'sine', 0.06), 90);
+  setTimeout(() => playTone(784, 0.14, 'sine', 0.06), 180);
+}
+
+// ============================================================
+//  4) ARKA PLANDAKİ SÜZÜLEN KALPLER
+// ============================================================
+function createFloatingHearts() {
+  const container = document.getElementById('floating-hearts');
+  const emojis = ['💕', '💖', '💗', '❤️', '💘', '✨', '💓'];
+  const count = 16;
+
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('span');
+    el.className = 'floating-heart';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.left = Math.random() * 100 + '%';
+    el.style.fontSize = (1 + Math.random() * 1.3) + 'rem';
+
+    const duration = 8 + Math.random() * 10;
+    el.style.animationDuration = duration + 's';
+    // Negatif gecikme: animasyonlar farklı noktalardan başlasın, hepsi aynı anda alttan çıkmasın
+    el.style.animationDelay = -(Math.random() * duration) + 's';
+    el.style.setProperty('--drift', (Math.random() * 140 - 70) + 'px');
+
+    container.appendChild(el);
+  }
+}
+
+// ============================================================
+//  5) "HAYIR" BUTONUNUN KAÇMA DAVRANIŞI
+// ============================================================
+const btnYes = document.getElementById('btn-yes');
+const btnNo = document.getElementById('btn-no');
+const funnyMessage = document.getElementById('funny-message');
+const questionEmoji = document.getElementById('question-emoji');
+
+let noScale = 1;
+let yesScale = 1;
+let escapeCount = 0;
+let isEscaping = false; // Aynı anda birden fazla event (hover+touch+click) tetiklenip butonu anında yok etmesin diye kısa bir bekleme kilidi
+let noOriginalParent = null; // Kaçmadan önceki DOM konumu (Baştan Başla'da geri koymak için)
+let noOriginalNextSibling = null;
+
+// Butonun rastgele ışınlanması yerine mevcut konumunun yakınında dolaşması için
+// izin verilen alan: her kaçışta bu yarıçap aralığında kısa bir mesafe kat eder
+const ROAM_MIN_DIST = 90;
+const ROAM_MAX_DIST = 220;
+const MIN_NO_SCALE = 0.55; // Küçülse de her zaman görünür ve fark edilir kalsın
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function escapeNoButton(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  if (isEscaping) return; // Kilit açık değilse tetiklemeyi yoksay
+  isEscaping = true;
+  setTimeout(() => { isEscaping = false; }, 320);
+
+  escapeCount++;
+  playEscape();
+
+  // Hayır azıcık küçülsün, Evet azıcık büyüsün (sınır koyarak, asla kaybolmasın)
+  noScale = Math.max(MIN_NO_SCALE, noScale - 0.05);
+  yesScale = Math.min(1.9, yesScale + 0.09);
+  btnNo.style.setProperty('--scale', noScale);
+  btnYes.style.setProperty('--scale', yesScale);
+
+  const rect = btnNo.getBoundingClientRect();
+  const margin = 16;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const maxX = Math.max(vw - rect.width - margin, margin);
+  const maxY = Math.max(vh - rect.height - margin, margin);
+
+  // İlk kaçışta konumu flex akışından çıkarıp mevcut yerinde sabitle (ışınlanma değil, buradan başlayan bir hareket).
+  // Not: .card üzerindeki backdrop-filter, position:fixed torunlar için viewport yerine kendisini
+  // konumlama referansı yapar — bu yüzden butonu gerçekten viewport'a göre sabitlemek için body'ye taşıyoruz.
+  if (!btnNo.classList.contains('escaping')) {
+    noOriginalParent = btnNo.parentNode;
+    noOriginalNextSibling = btnNo.nextSibling;
+    document.body.appendChild(btnNo);
+    btnNo.classList.add('escaping');
+    btnNo.style.left = clamp(rect.left, margin, maxX) + 'px';
+    btnNo.style.top = clamp(rect.top, margin, maxY) + 'px';
+    void btnNo.offsetWidth; // reflow: geçiş animasyonunun buradan başlamasını garanti eder
+  }
+
+  // Şu anki konumdan kısa bir mesafe uzağa, rastgele bir yöne kaç (çevrede dolaşma hissi)
+  const currentLeft = parseFloat(btnNo.style.left) || rect.left;
+  const currentTop = parseFloat(btnNo.style.top) || rect.top;
+  const angle = Math.random() * Math.PI * 2;
+  const dist = ROAM_MIN_DIST + Math.random() * (ROAM_MAX_DIST - ROAM_MIN_DIST);
+
+  const newLeft = clamp(currentLeft + Math.cos(angle) * dist, margin, maxX);
+  const newTop = clamp(currentTop + Math.sin(angle) * dist, margin, maxY);
+
+  btnNo.style.left = newLeft + 'px';
+  btnNo.style.top = newTop + 'px';
+
+  // Komik mesajı döngüyle değiştir
+  const messages = t('funnyMessages');
+  funnyMessage.textContent = messages[(escapeCount - 1) % messages.length];
+
+  // Soru emojisini de canlandır
+  questionEmoji.textContent = ['💘', '😳', '🥹', '😅'][escapeCount % 4];
+}
+
+function isQuestionScreenActive() {
+  return document.getElementById('screen-question').classList.contains('active');
+}
+
+// Masaüstünde imleç yaklaşınca (tam üzerine gelmeden), mobilde dokununca kaçsın
+document.addEventListener('mousemove', (e) => {
+  if (!isQuestionScreenActive() || isEscaping) return;
+  const rect = btnNo.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+  const proximityThreshold = Math.max(rect.width, rect.height) / 2 + 55;
+  if (dist < proximityThreshold) escapeNoButton();
+});
+
+// Mobilde parmak yaklaşırken de aynı mantık (touchmove), artı gerçek dokunuşa karşı son güvenlik (touchstart)
+document.addEventListener('touchmove', (e) => {
+  if (!isQuestionScreenActive() || isEscaping) return;
+  const touch = e.touches[0];
+  if (!touch) return;
+  const rect = btnNo.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const dist = Math.hypot(touch.clientX - cx, touch.clientY - cy);
+  const proximityThreshold = Math.max(rect.width, rect.height) / 2 + 60;
+  if (dist < proximityThreshold) escapeNoButton();
+}, { passive: true });
+
+btnNo.addEventListener('touchstart', escapeNoButton, { passive: false });
+// Her ihtimale karşı: bir şekilde tıklama/klavye ile aktivasyon geçerse bile hiçbir yere yönlendirmesin, sadece tekrar kaçsın
+btnNo.addEventListener('click', escapeNoButton);
+
+// ============================================================
+//  6) KONFETİ (canvas ile, harici kütüphane yok)
+// ============================================================
+function launchConfetti(canvasId, duration = 2600) {
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+
+  const colors = ['#ff6ec4', '#7873f5', '#ffd166', '#06d6a0', '#ff9a5a', '#f72585'];
+  const particles = [];
+  const count = 140;
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: -20 - Math.random() * canvas.height * 0.6,
+      w: 6 + Math.random() * 6,
+      h: 8 + Math.random() * 10,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      speedY: 2 + Math.random() * 3.5,
+      speedX: -2 + Math.random() * 4,
+      rotation: Math.random() * 360,
+      rotationSpeed: -8 + Math.random() * 16,
+    });
+  }
+
+  let start = null;
+  function frame(ts) {
+    if (!start) start = ts;
+    const elapsed = ts - start;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach((p) => {
+      p.y += p.speedY;
+      p.x += p.speedX;
+      p.rotation += p.rotationSpeed;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rotation * Math.PI) / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+
+    if (elapsed < duration) {
+      requestAnimationFrame(frame);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  requestAnimationFrame(frame);
+}
+
+window.addEventListener('resize', () => {
+  ['confetti-canvas', 'confetti-canvas-2'].forEach((id) => {
+    const c = document.getElementById(id);
+    if (c) {
+      c.width = window.innerWidth;
+      c.height = window.innerHeight;
+    }
+  });
+});
+
+// ============================================================
+//  7) TARİH SEÇİMİ — önümüzdeki 14 gün
+// ============================================================
+let selectedDateText = null;
+let selectedDayIndex = null;
+let selectedDayDate = null;
+
+function generateDayPicker() {
+  const wrap = document.getElementById('day-picker');
+  wrap.innerHTML = '';
+  const dayShort = t('dayShort');
+  const dayLong = t('dayLong');
+  const monthShort = t('monthShort');
+  const monthLong = t('monthLong');
+
+  for (let i = 0; i < 14; i++) {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + i);
+
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'day-card';
+    if (i === selectedDayIndex) card.classList.add('selected');
+    card.setAttribute('aria-pressed', i === selectedDayIndex ? 'true' : 'false');
+
+    const dowLabel = i === 0 ? t('today') : i === 1 ? t('tomorrow') : dayShort[d.getDay()];
+    card.innerHTML = `
+      <span class="dow">${dowLabel}</span>
+      <span class="dom">${d.getDate()}</span>
+      <span class="mon">${monthShort[d.getMonth()]}</span>
+    `;
+
+    const fullText = `${dayLong[d.getDay()]}, ${d.getDate()} ${monthLong[d.getMonth()]}`;
+    if (i === selectedDayIndex) {
+      selectedDateText = fullText;
+      selectedDayDate = d;
+    }
+
+    card.addEventListener('click', () => {
+      playClick();
+      document.querySelectorAll('.day-card.selected').forEach((c) => { c.classList.remove('selected'); c.setAttribute('aria-pressed', 'false'); });
+      card.classList.add('selected');
+      card.setAttribute('aria-pressed', 'true');
+      selectedDayIndex = i;
+      selectedDateText = fullText;
+      selectedDayDate = d;
+      checkPlanComplete();
+    });
+
+    wrap.appendChild(card);
+  }
+}
+
+// ============================================================
+//  8) SAAT VE MEKAN SEÇİMİ
+// ============================================================
+let selectedTimeKey = null;
+let selectedPlaceKey = null;
+
+function renderTimePicker() {
+  const wrap = document.getElementById('time-picker');
+  wrap.innerHTML = '';
+  t('timeOptions').forEach((opt) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'option-card';
+    if (opt.key === selectedTimeKey) btn.classList.add('selected');
+    btn.setAttribute('aria-pressed', opt.key === selectedTimeKey ? 'true' : 'false');
+    btn.innerHTML = `
+      <span class="option-emoji">${opt.emoji}</span>
+      <span>${opt.name}</span>
+      <span class="option-sub">${opt.time}</span>
+    `;
+    btn.addEventListener('click', () => {
+      playClick();
+      document.querySelectorAll('#time-picker .option-card.selected').forEach((c) => { c.classList.remove('selected'); c.setAttribute('aria-pressed', 'false'); });
+      btn.classList.add('selected');
+      btn.setAttribute('aria-pressed', 'true');
+      selectedTimeKey = opt.key;
+      checkPlanComplete();
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+function renderPlacePicker() {
+  const wrap = document.getElementById('place-picker');
+  wrap.innerHTML = '';
+  t('placeOptions').forEach((opt) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'option-card';
+    if (opt.key === selectedPlaceKey) btn.classList.add('selected');
+    btn.setAttribute('aria-pressed', opt.key === selectedPlaceKey ? 'true' : 'false');
+    btn.innerHTML = `
+      <span class="option-emoji">${opt.emoji}</span>
+      <span>${opt.name}</span>
+    `;
+    btn.addEventListener('click', () => {
+      playClick();
+      document.querySelectorAll('#place-picker .option-card.selected').forEach((c) => { c.classList.remove('selected'); c.setAttribute('aria-pressed', 'false'); });
+      btn.classList.add('selected');
+      btn.setAttribute('aria-pressed', 'true');
+      selectedPlaceKey = opt.key;
+      checkPlanComplete();
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+function getSelectedTimeOption() {
+  return t('timeOptions').find((o) => o.key === selectedTimeKey) || null;
+}
+
+function getSelectedPlaceOption() {
+  return t('placeOptions').find((o) => o.key === selectedPlaceKey) || null;
+}
+
+function checkPlanComplete() {
+  const btn = document.getElementById('btn-confirm-plan');
+  btn.disabled = !(selectedDateText && selectedTimeKey);
+}
+
+// ============================================================
+//  9) GERİ SAYIM (bilet ekranı)
+// ============================================================
+let countdownIntervalId = null;
+
+function getTargetDateTime() {
+  if (!selectedDayDate || !selectedTimeKey) return null;
+  const opt = getSelectedTimeOption();
+  if (!opt) return null;
+  const [hh, mm] = opt.time.split(':').map(Number);
+  const target = new Date(selectedDayDate);
+  target.setHours(hh, mm, 0, 0);
+  return target;
+}
+
+function countdownUnit(value, label) {
+  return `<div class="countdown-unit"><span class="countdown-num">${value}</span><span class="countdown-label">${label}</span></div>`;
+}
+
+function renderCountdownTick() {
+  const el = document.getElementById('countdown');
+  const target = getTargetDateTime();
+  if (!target) { el.innerHTML = ''; return; }
+
+  const diff = target.getTime() - Date.now();
+  if (diff <= 0) {
+    el.innerHTML = countdownUnit('🎉', t('countdownPast'));
+    stopCountdown();
+    return;
+  }
+
+  const totalSeconds = Math.floor(diff / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  el.innerHTML =
+    countdownUnit(days, t('countdownDays')) +
+    countdownUnit(hours, t('countdownHours')) +
+    countdownUnit(minutes, t('countdownMinutes')) +
+    countdownUnit(seconds, t('countdownSeconds'));
+}
+
+function stopCountdown() {
+  if (countdownIntervalId) {
+    clearInterval(countdownIntervalId);
+    countdownIntervalId = null;
+  }
+}
+
+function startCountdown() {
+  stopCountdown();
+  renderCountdownTick();
+  countdownIntervalId = setInterval(renderCountdownTick, 1000);
+}
+
+// ============================================================
+//  10) BİLET OLUŞTURMA, İNDİRME VE WHATSAPP PAYLAŞIMI
+// ============================================================
+function buildTicket() {
+  const timeOpt = getSelectedTimeOption();
+  const placeOpt = getSelectedPlaceOption();
+  const placeLabel = placeOpt ? `${placeOpt.name} ${placeOpt.emoji}` : t('surprisePlace');
+
+  document.getElementById('ticket-date').textContent = selectedDateText;
+  document.getElementById('ticket-time').textContent = timeOpt ? `${timeOpt.name} (${timeOpt.time})` : '-';
+  document.getElementById('ticket-place').textContent = placeLabel;
+
+  // Bilet, gönderene doğrudan haber verilecek şekilde açıldıysa buton metnini ona göre değiştir
+  const waBtn = document.getElementById('btn-whatsapp');
+  waBtn.textContent = senderPhone ? t('whatsappNotifySenderBtn') : t('whatsappNotifyBtn');
+
+  startCountdown();
+}
+
+function buildWhatsappMessage() {
+  const timeOpt = getSelectedTimeOption();
+  const placeOpt = getSelectedPlaceOption();
+  const placeLabel = placeOpt ? `${placeOpt.name} ${placeOpt.emoji}` : t('surprisePlace');
+  const who = recipientName ? `${recipientName} ` : '';
+  const intro = senderPhone ? t('waIntroWithSender')(who) : t('ticketHeader');
+  return (
+    `${intro}\n\n` +
+    `${t('waDateLabel')}: ${selectedDateText}\n` +
+    `${t('waTimeLabel')}: ${timeOpt ? `${timeOpt.name} (${timeOpt.time})` : '-'}\n` +
+    `${t('waPlaceLabel')}: ${placeLabel}\n\n` +
+    `${t('waFooter')}`
+  );
+}
+
+function downloadTicketImage() {
+  playClick();
+  if (typeof html2canvas === 'undefined') return;
+  const target = document.getElementById('ticket-capture');
+  html2canvas(target, { backgroundColor: null, scale: 2 }).then((canvas) => {
+    const link = document.createElement('a');
+    link.download = 'date-ticket.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+}
+
+// ============================================================
+//  11) BUTON OLAYLARI
+// ============================================================
+document.getElementById('btn-start').addEventListener('click', () => {
+  playClick();
+  goToScreen('screen-question');
+});
+
+btnYes.addEventListener('click', () => {
+  playYesChime();
+  goToScreen('screen-yes');
+  launchConfetti('confetti-canvas');
+});
+
+document.getElementById('btn-to-date').addEventListener('click', () => {
+  playClick();
+  goToScreen('screen-plan');
+});
+
+document.getElementById('btn-confirm-plan').addEventListener('click', () => {
+  playYesChime();
+  buildTicket();
+  goToScreen('screen-ticket');
+  launchConfetti('confetti-canvas-2');
+});
+
+document.getElementById('btn-whatsapp').addEventListener('click', () => {
+  playClick();
+  const text = encodeURIComponent(buildWhatsappMessage());
+  const target = senderPhone
+    ? `https://api.whatsapp.com/send?phone=${senderPhone}&text=${text}`
+    : `https://api.whatsapp.com/send?text=${text}`;
+  window.open(target, '_blank');
+});
+
+document.getElementById('btn-download-ticket').addEventListener('click', downloadTicketImage);
+
+document.getElementById('btn-restart').addEventListener('click', () => {
+  playClick();
+  // Durumu sıfırla
+  noScale = 1;
+  yesScale = 1;
+  escapeCount = 0;
+  btnNo.style.setProperty('--scale', 1);
+  btnYes.style.setProperty('--scale', 1);
+  btnNo.classList.remove('escaping');
+  btnNo.style.left = '';
+  btnNo.style.top = '';
+  funnyMessage.textContent = '';
+
+  isEscaping = false;
+  if (noOriginalParent) {
+    noOriginalParent.insertBefore(btnNo, noOriginalNextSibling);
+    noOriginalParent = null;
+    noOriginalNextSibling = null;
+  }
+
+  document.querySelectorAll('.day-card.selected, .option-card.selected').forEach((c) => {
+    c.classList.remove('selected');
+    c.setAttribute('aria-pressed', 'false');
+  });
+  selectedDateText = null;
+  selectedDayIndex = null;
+  selectedDayDate = null;
+  selectedTimeKey = null;
+  selectedPlaceKey = null;
+  checkPlanComplete();
+  stopCountdown();
+  document.getElementById('countdown').innerHTML = '';
+
+  goToScreen('screen-welcome');
+});
+
+// ============================================================
+//  BAŞLANGIÇ
+// ============================================================
+createFloatingHearts();
+setupTopBarToggles();
+setupLinkGenerator();
+applyThemeColor();
+applyMode();
+applySoundUI();
+applyTranslations();
+
+// Linkte gönderen bilgisi varsa bu bir alıcı ziyaretidir: doğrudan soruya geç.
+// Yoksa önce linki oluşturacak kişiye kurulum ekranını göster.
+if (senderPhone) {
+  goToScreen('screen-welcome');
+} else {
+  goToScreen('screen-setup');
+}
+  </script>
 </body>
 </html>

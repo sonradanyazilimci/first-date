@@ -1,3 +1,82 @@
+/* ---------- Değişkenler: renk temaları ---------- */
+:root {
+  --brand-1: #ff6ec4;
+  --brand-2: #7873f5;
+  --bg-1: #ff9a9e;
+  --bg-2: #fecfef;
+  --bg-3: #a18cd1;
+  --bg-4: #ff9a9e;
+  --bg-5: #fbc2eb;
+
+  --text-strong: #6b2e5f;
+  --text-soft: #8a5a7d;
+  --text-accent: #c7488d;
+  --card-bg: rgba(255, 255, 255, 0.92);
+  --field-bg: #fff8fc;
+  --field-border: #f0d5e6;
+  --pill-bg: #f7eef5;
+  --pill-bg-hover: #fbe0ef;
+  --shadow-color: rgba(120, 40, 100, 0.28);
+}
+
+:root[data-theme-color="sunset"] {
+  --brand-1: #ff9a5a;
+  --brand-2: #ff5e7e;
+  --bg-1: #ffcc70;
+  --bg-2: #ff9a5a;
+  --bg-3: #ff5e7e;
+  --bg-4: #ffcc70;
+  --bg-5: #ff9a5a;
+}
+
+:root[data-theme-color="ocean"] {
+  --brand-1: #22c1c3;
+  --brand-2: #5b86e5;
+  --bg-1: #a1f7ff;
+  --bg-2: #5b86e5;
+  --bg-3: #22c1c3;
+  --bg-4: #a1f7ff;
+  --bg-5: #5b86e5;
+}
+
+:root[data-theme-color="lavender"] {
+  --brand-1: #a18cd1;
+  --brand-2: #fbc2eb;
+  --bg-1: #c3a8f0;
+  --bg-2: #fbc2eb;
+  --bg-3: #a18cd1;
+  --bg-4: #c3a8f0;
+  --bg-5: #fbc2eb;
+}
+
+:root[data-theme-color="mint"] {
+  --brand-1: #2bc48a;
+  --brand-2: #38c9c9;
+  --bg-1: #a8ffce;
+  --bg-2: #43e97b;
+  --bg-3: #38c9c9;
+  --bg-4: #a8ffce;
+  --bg-5: #43e97b;
+}
+
+/* ---------- Karanlık mod ---------- */
+:root[data-mode="dark"] {
+  --text-strong: #f5e6f0;
+  --text-soft: #d9b8cf;
+  --text-accent: #ff9ec4;
+  --card-bg: rgba(32, 22, 38, 0.9);
+  --field-bg: #241a28;
+  --field-border: #4a2f45;
+  --pill-bg: #2c1f2e;
+  --pill-bg-hover: #3a2838;
+  --shadow-color: rgba(0, 0, 0, 0.55);
+  --bg-1: #1b1523;
+  --bg-2: #241b2e;
+  --bg-3: #2d2138;
+  --bg-4: #1b1523;
+  --bg-5: #241b2e;
+}
+
 /* ---------- Temel Ayarlar ---------- */
 * {
   box-sizing: border-box;
@@ -14,16 +93,119 @@ html, body {
 
 body {
   min-height: 100dvh;
-  background: linear-gradient(-45deg, #ff9a9e, #fecfef, #a18cd1, #ff9a9e, #fbc2eb);
+  background: linear-gradient(-45deg, var(--bg-1), var(--bg-2), var(--bg-3), var(--bg-4), var(--bg-5));
   background-size: 400% 400%;
   animation: gradientShift 12s ease infinite;
   position: relative;
+  transition: background 0.3s ease;
 }
 
 @keyframes gradientShift {
   0%   { background-position: 0% 50%; }
   50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+/* ---------- Erişilebilirlik: klavye odağı ---------- */
+.btn:focus-visible,
+.option-card:focus-visible,
+.day-card:focus-visible,
+.lang-btn:focus-visible,
+.icon-toggle:focus-visible,
+.theme-swatch:focus-visible,
+.field input:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Üst çubuk: dil / tema / ses ---------- */
+.top-bar {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--card-bg);
+  border-radius: 999px;
+  padding: 4px;
+  box-shadow: 0 6px 16px var(--shadow-color);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.top-bar-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--field-border);
+  margin: 0 2px;
+  flex: 0 0 auto;
+}
+
+.icon-toggle {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  border-radius: 999px;
+  padding: 6px 9px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  touch-action: manipulation;
+  line-height: 1;
+}
+
+.icon-toggle:hover {
+  background: var(--pill-bg-hover);
+}
+
+.lang-switcher {
+  display: flex;
+  gap: 4px;
+}
+
+.lang-btn {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  border-radius: 999px;
+  padding: 6px 9px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  touch-action: manipulation;
+}
+
+.lang-btn:hover {
+  background: var(--pill-bg-hover);
+}
+
+.lang-btn.active {
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  color: #fff;
+}
+
+@media (max-width: 460px) {
+  .top-bar { top: 8px; right: 8px; padding: 3px; gap: 2px; }
+  .lang-btn { font-size: 0.6rem; padding: 5px 6px; }
+  .icon-toggle { font-size: 0.82rem; padding: 5px 7px; }
 }
 
 /* ---------- Süzülen kalpler ---------- */
@@ -106,13 +288,15 @@ body {
 
 /* ---------- Kart ---------- */
 .card {
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--card-bg);
   border-radius: 32px;
   padding: 40px 28px;
   text-align: center;
-  box-shadow: 0 20px 50px rgba(120, 40, 100, 0.28), 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 20px 50px var(--shadow-color), 0 2px 8px rgba(0,0,0,0.05);
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   position: relative;
+  transition: background 0.3s ease;
 }
 
 .card-wide {
@@ -124,7 +308,7 @@ h1 {
   font-family: 'Baloo 2', sans-serif;
   font-weight: 800;
   font-size: 1.8rem;
-  color: #6b2e5f;
+  color: var(--text-strong);
   margin: 8px 0 6px;
   line-height: 1.25;
 }
@@ -135,7 +319,7 @@ h1.small-title {
 }
 
 .subtitle {
-  color: #8a5a7d;
+  color: var(--text-soft);
   font-size: 1rem;
   margin: 0 0 24px;
   font-weight: 600;
@@ -166,15 +350,15 @@ h1.small-title {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #ff6ec4, #7873f5);
-  box-shadow: 0 10px 24px rgba(120, 60, 200, 0.4);
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  box-shadow: 0 10px 24px var(--shadow-color);
   width: 100%;
   margin-top: 8px;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 14px 28px rgba(120, 60, 200, 0.5);
+  box-shadow: 0 14px 28px var(--shadow-color);
 }
 
 .btn-primary:disabled {
@@ -186,7 +370,7 @@ h1.small-title {
 
 .btn-secondary {
   background: transparent;
-  color: #8a5a7d;
+  color: var(--text-soft);
   box-shadow: none;
   width: 100%;
   margin-top: 10px;
@@ -194,15 +378,15 @@ h1.small-title {
 }
 
 .btn-secondary-solid {
-  background: #f7eef5;
-  color: #6b2e5f;
+  background: var(--pill-bg);
+  color: var(--text-strong);
   box-shadow: none;
   width: 100%;
   margin-top: 8px;
 }
 
 .btn-secondary-solid:hover {
-  background: #fbe0ef;
+  background: var(--pill-bg-hover);
 }
 
 /* ---------- Form alanları (kurulum ekranı) ---------- */
@@ -214,31 +398,31 @@ h1.small-title {
 .field label {
   display: block;
   font-weight: 700;
-  color: #6b2e5f;
+  color: var(--text-strong);
   font-size: 0.9rem;
   margin-bottom: 6px;
 }
 
 .field input {
   width: 100%;
-  border: 2px solid #f0d5e6;
+  border: 2px solid var(--field-border);
   border-radius: 14px;
   padding: 12px 14px;
   font-family: 'Baloo 2', sans-serif;
   font-size: 1rem;
-  color: #6b2e5f;
-  background: #fff8fc;
+  color: var(--text-strong);
+  background: var(--field-bg);
   outline: none;
   transition: border-color 0.15s ease;
 }
 
 .field input:focus {
-  border-color: #ff6ec4;
+  border-color: var(--brand-1);
 }
 
 .field-hint {
   font-size: 0.75rem;
-  color: #a05a8f;
+  color: var(--text-soft);
   margin: 4px 0 0;
   font-weight: 600;
 }
@@ -251,19 +435,19 @@ h1.small-title {
 .link-result label {
   display: block;
   font-weight: 700;
-  color: #6b2e5f;
+  color: var(--text-strong);
   font-size: 0.9rem;
   margin-bottom: 6px;
 }
 
 .link-result input[readonly] {
   width: 100%;
-  border: 2px dashed #ff9ec4;
+  border: 2px dashed var(--brand-1);
   border-radius: 14px;
   padding: 12px 14px;
   font-size: 0.85rem;
-  color: #6b2e5f;
-  background: #fff8f0;
+  color: var(--text-strong);
+  background: var(--field-bg);
   margin-bottom: 4px;
 }
 
@@ -276,6 +460,63 @@ h1.small-title {
 
 .btn-whatsapp:hover {
   transform: translateY(-2px) scale(1.03);
+}
+
+/* ---------- QR kod ---------- */
+.qr-wrap {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.qr-wrap span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-soft);
+}
+
+.qr-box {
+  background: #fff;
+  padding: 10px;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px var(--shadow-color);
+  line-height: 0;
+}
+
+/* ---------- Şablon ve tema seçici (kurulum ekranı) ---------- */
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.theme-swatches {
+  display: flex;
+  gap: 10px;
+  margin: 0 0 20px;
+  flex-wrap: wrap;
+}
+
+.theme-swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  background: linear-gradient(135deg, var(--swatch-1), var(--swatch-2));
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.theme-swatch:hover {
+  transform: scale(1.08);
+}
+
+.theme-swatch.selected {
+  border-color: var(--text-strong);
 }
 
 /* Evet / Hayır butonları */
@@ -291,8 +532,8 @@ h1.small-title {
 }
 
 .btn-yes {
-  background: linear-gradient(135deg, #ff6ec4, #ff9a5a);
-  box-shadow: 0 10px 24px rgba(255, 100, 150, 0.45);
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  box-shadow: 0 10px 24px var(--shadow-color);
   transform: scale(var(--scale, 1));
   transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
   z-index: 2;
@@ -314,7 +555,7 @@ h1.small-title {
 .funny-message {
   min-height: 28px;
   font-weight: 700;
-  color: #c7488d;
+  color: var(--text-accent);
   font-size: 1.05rem;
   margin: 6px 0 0;
 }
@@ -377,7 +618,7 @@ h1.small-title {
 /* ---------- Gün seçici ---------- */
 .section-label {
   font-size: 1rem;
-  color: #6b2e5f;
+  color: var(--text-strong);
   font-weight: 700;
   margin: 22px 0 10px;
 }
@@ -393,7 +634,7 @@ h1.small-title {
 .day-card {
   flex: 0 0 auto;
   min-width: 66px;
-  background: #f7eef5;
+  background: var(--pill-bg);
   border: 2px solid transparent;
   border-radius: 18px;
   padding: 12px 8px;
@@ -401,17 +642,18 @@ h1.small-title {
   cursor: pointer;
   font-family: 'Baloo 2', sans-serif;
   transition: all 0.15s ease;
+  color: inherit;
 }
 
 .day-card:hover {
-  background: #fbe0ef;
+  background: var(--pill-bg-hover);
 }
 
 .day-card .dow {
   display: block;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #a05a8f;
+  color: var(--text-soft);
   text-transform: uppercase;
 }
 
@@ -419,19 +661,19 @@ h1.small-title {
   display: block;
   font-size: 1.3rem;
   font-weight: 800;
-  color: #6b2e5f;
+  color: var(--text-strong);
   margin: 2px 0;
 }
 
 .day-card .mon {
   display: block;
   font-size: 0.7rem;
-  color: #a05a8f;
+  color: var(--text-soft);
 }
 
 .day-card.selected {
-  background: linear-gradient(135deg, #ff6ec4, #7873f5);
-  border-color: #ff6ec4;
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  border-color: var(--brand-1);
 }
 .day-card.selected .dow,
 .day-card.selected .dom,
@@ -439,7 +681,7 @@ h1.small-title {
   color: #fff;
 }
 
-/* ---------- Saat / mekan seçici ---------- */
+/* ---------- Saat / mekan / şablon seçici ---------- */
 .option-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -447,7 +689,7 @@ h1.small-title {
 }
 
 .option-card {
-  background: #f7eef5;
+  background: var(--pill-bg);
   border: 2px solid transparent;
   border-radius: 18px;
   padding: 14px 8px;
@@ -458,13 +700,13 @@ h1.small-title {
   cursor: pointer;
   font-family: 'Baloo 2', sans-serif;
   font-weight: 700;
-  color: #6b2e5f;
+  color: var(--text-strong);
   font-size: 0.88rem;
   transition: all 0.15s ease;
 }
 
 .option-card:hover {
-  background: #fbe0ef;
+  background: var(--pill-bg-hover);
   transform: translateY(-2px);
 }
 
@@ -474,13 +716,13 @@ h1.small-title {
 
 .option-sub {
   font-size: 0.72rem;
-  color: #a05a8f;
+  color: var(--text-soft);
   font-weight: 600;
 }
 
 .option-card.selected {
-  background: linear-gradient(135deg, #ff6ec4, #7873f5);
-  border-color: #ff6ec4;
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  border-color: var(--brand-1);
   color: #fff;
 }
 .option-card.selected .option-sub {
@@ -489,8 +731,8 @@ h1.small-title {
 
 /* ---------- Bilet ---------- */
 .ticket {
-  background: linear-gradient(135deg, #fff8f0, #fff0f8);
-  border: 2px dashed #ff9ec4;
+  background: linear-gradient(135deg, var(--field-bg), var(--card-bg));
+  border: 2px dashed var(--brand-1);
   border-radius: 20px;
   padding: 20px;
   margin: 18px 0 10px;
@@ -500,7 +742,7 @@ h1.small-title {
 .ticket-header {
   font-size: 1.15rem;
   font-weight: 800;
-  color: #c7488d;
+  color: var(--text-accent);
   text-align: center;
   margin-bottom: 14px;
   letter-spacing: 0.5px;
@@ -511,16 +753,16 @@ h1.small-title {
   justify-content: space-between;
   padding: 6px 0;
   font-size: 0.95rem;
-  color: #6b2e5f;
+  color: var(--text-strong);
 }
 
 .ticket-row strong {
-  color: #c7488d;
+  color: var(--text-accent);
 }
 
 .ticket-divider {
   text-align: center;
-  color: #d9a8c4;
+  color: var(--text-soft);
   margin: 12px 0;
   font-size: 0.8rem;
   letter-spacing: 2px;
@@ -529,8 +771,41 @@ h1.small-title {
 .ticket-footer {
   text-align: center;
   font-weight: 700;
-  color: #8a5a7d;
+  color: var(--text-soft);
   font-size: 0.85rem;
+}
+
+/* ---------- Geri sayım ---------- */
+.countdown {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 4px 0 18px;
+  flex-wrap: wrap;
+}
+
+.countdown-unit {
+  background: var(--pill-bg);
+  border-radius: 14px;
+  padding: 10px 12px;
+  min-width: 56px;
+  text-align: center;
+}
+
+.countdown-num {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-strong);
+}
+
+.countdown-label {
+  display: block;
+  font-size: 0.62rem;
+  color: var(--text-soft);
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-top: 2px;
 }
 
 /* ---------- Mobil uyum ---------- */

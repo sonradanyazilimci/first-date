@@ -4,6 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
 <title>Sana Bir Sorum Var 💌</title>
+<meta name="description" content="Send a playful 'Will you go on a date with me?' invite, watch the No button run away, and plan the date together." />
+<meta name="theme-color" content="#ff6ec4" />
+<meta property="og:title" content="I Have a Question For You 💌" />
+<meta property="og:description" content="A playful invitation link — create yours, send it, and plan the date together." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="og-image.svg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="og-image.svg" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%8C%3C/text%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet" />
@@ -14,39 +23,63 @@
   <!-- Arka planda süzülen kalp/emoji parçacıkları -->
   <div id="floating-hearts" aria-hidden="true"></div>
 
+  <!-- Üst çubuk: karanlık mod / ses / dil, tüm ekranlarda sabit görünür -->
+  <div class="top-bar">
+    <button type="button" class="icon-toggle" id="btn-dark-toggle" aria-pressed="false">🌙</button>
+    <button type="button" class="icon-toggle" id="btn-sound-toggle" aria-pressed="true">🔊</button>
+    <span class="top-bar-divider" aria-hidden="true"></span>
+    <div class="lang-switcher" id="lang-switcher" role="group" aria-label="Language">
+      <button type="button" class="lang-btn" data-lang="tr" aria-pressed="false">🇹🇷 TR</button>
+      <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">🇬🇧 EN</button>
+      <button type="button" class="lang-btn" data-lang="fr" aria-pressed="false">🇫🇷 FR</button>
+      <button type="button" class="lang-btn" data-lang="de" aria-pressed="false">🇩🇪 DE</button>
+    </div>
+  </div>
+
   <main id="app">
 
     <!-- 0. KURULUM EKRANI (linki oluşturan kişi için) -->
-    <section class="screen" id="screen-setup">
+    <section class="screen active" id="screen-setup">
       <div class="card card-wide">
-        <h1 class="small-title">Önce Sen 💌</h1>
-        <p class="subtitle">Karşı taraf cevaplayınca sana haber verelim</p>
+        <h1 class="small-title" data-i18n="setupTitle">Önce Sen 💌</h1>
+        <p class="subtitle" data-i18n="setupSubtitle">Karşı taraf cevaplayınca sana haber verelim</p>
+
+        <h2 class="section-label" data-i18n="templateLabel">Ne için bir davetiye? 💌</h2>
+        <div class="template-grid" id="template-picker" role="group" aria-label="Invitation type"></div>
+
+        <h2 class="section-label" data-i18n="themeLabel">Renk teman 🎨</h2>
+        <div class="theme-swatches" id="theme-picker" role="group" aria-label="Color theme"></div>
 
         <div class="field">
-          <label for="setup-name">Adın</label>
-          <input type="text" id="setup-name" placeholder="Örn: Ahmet" maxlength="30" />
+          <label for="setup-name" data-i18n="nameLabel">Adın</label>
+          <input type="text" id="setup-name" data-i18n-placeholder="namePlaceholder" placeholder="Örn: Ahmet" maxlength="30" />
         </div>
 
         <div class="field">
-          <label for="setup-phone">WhatsApp Numaran</label>
-          <input type="tel" id="setup-phone" placeholder="Örn: 905551234567" maxlength="20" />
-          <p class="field-hint">Başında ülke kodu olsun (90...), boşluk/artı fark etmez</p>
+          <label for="setup-phone" data-i18n="phoneLabel">WhatsApp Numaran</label>
+          <input type="tel" id="setup-phone" data-i18n-placeholder="phonePlaceholder" placeholder="Örn: 905551234567" maxlength="20" />
+          <p class="field-hint" data-i18n="phoneHint">Başında ülke kodu olsun (90...), boşluk/artı fark etmez</p>
         </div>
 
         <div class="field">
-          <label for="setup-recipient">Kime gönderiyorsun? (opsiyonel)</label>
-          <input type="text" id="setup-recipient" placeholder="Örn: Zeynep" maxlength="30" />
+          <label for="setup-recipient" data-i18n="recipientLabel">Kime gönderiyorsun? (opsiyonel)</label>
+          <input type="text" id="setup-recipient" data-i18n-placeholder="recipientPlaceholder" placeholder="Örn: Zeynep" maxlength="30" />
         </div>
 
-        <p class="funny-message" id="setup-error"></p>
+        <p class="funny-message" id="setup-error" role="alert"></p>
 
-        <button class="btn btn-primary" id="btn-generate-link">Linki Oluştur 🔗</button>
+        <button class="btn btn-primary" id="btn-generate-link" data-i18n="generateBtn">Linki Oluştur 🔗</button>
 
         <div class="link-result" id="setup-result" hidden>
-          <label for="generated-link-input">Linkin hazır 🎉</label>
+          <label for="generated-link-input" data-i18n="linkReadyLabel">Linkin hazır 🎉</label>
           <input type="text" id="generated-link-input" readonly />
-          <button class="btn btn-secondary-solid" id="btn-copy-link">Linki Kopyala 📋</button>
-          <button class="btn btn-whatsapp" id="btn-share-link">WhatsApp'tan Gönder 📤</button>
+          <button class="btn btn-secondary-solid" id="btn-copy-link" data-i18n="copyBtn">Linki Kopyala 📋</button>
+          <button class="btn btn-whatsapp" id="btn-share-link" data-i18n="shareBtn">WhatsApp'tan Gönder 📤</button>
+
+          <div class="qr-wrap">
+            <span data-i18n="qrLabel">Ya da QR kodu okutsun 📱</span>
+            <div class="qr-box" id="qr-code"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -55,10 +88,10 @@
     <section class="screen" id="screen-welcome">
       <div class="card">
         <div class="big-emoji bounce">👀</div>
-        <h1>Sana çok önemli<br />bir sorum var...</h1>
+        <h1 data-i18n-html="welcomeTitle">Sana çok önemli<br />bir sorum var...</h1>
         <p class="subtitle" id="sender-note" hidden></p>
-        <p class="subtitle">Cevaplamadan önce derin bir nefes al 😌</p>
-        <button class="btn btn-primary pulse" id="btn-start">Hazırım 💪</button>
+        <p class="subtitle" id="welcome-subtitle" data-i18n="welcomeSubtitle">Cevaplamadan önce derin bir nefes al 😌</p>
+        <button class="btn btn-primary pulse" id="btn-start" data-i18n="startBtn">Hazırım 💪</button>
       </div>
     </section>
 
@@ -67,10 +100,10 @@
       <div class="card">
         <div class="big-emoji wiggle" id="question-emoji">💘</div>
         <h1 id="question-title">Benimle çıkar mısın?</h1>
-        <p class="funny-message" id="funny-message">&nbsp;</p>
+        <p class="funny-message" id="funny-message" aria-live="polite">&nbsp;</p>
         <div class="button-row" id="button-row">
-          <button class="btn btn-yes" id="btn-yes" style="--scale:1">Evet 🥰</button>
-          <button class="btn btn-no" id="btn-no" style="--scale:1">Hayır 😤</button>
+          <button class="btn btn-yes" id="btn-yes" style="--scale:1" data-i18n="yesBtn">Evet 🥰</button>
+          <button class="btn btn-no" id="btn-no" style="--scale:1" data-i18n="noBtn">Hayır 😤</button>
         </div>
       </div>
     </section>
@@ -82,60 +115,27 @@
         <div class="dancing-emojis">
           <span>🎉</span><span>💃</span><span>🕺</span><span>🎊</span>
         </div>
-        <h1>BİLİYORDUM! 🎊</h1>
-        <p class="subtitle">Kalbim küt küt atıyor şu an 💓</p>
-        <button class="btn btn-primary pulse" id="btn-to-date">Randevuyu Ayarlayalım 📅</button>
+        <h1 data-i18n="yesTitle">BİLİYORDUM! 🎊</h1>
+        <p class="subtitle" data-i18n="yesSubtitle">Kalbim küt küt atıyor şu an 💓</p>
+        <button class="btn btn-primary pulse" id="btn-to-date" data-i18n="toDateBtn">Randevuyu Ayarlayalım 📅</button>
       </div>
     </section>
 
     <!-- 4. TARİH / SAAT / MEKAN SEÇİMİ -->
     <section class="screen" id="screen-plan">
       <div class="card card-wide">
-        <h1 class="small-title">Hadi Planlayalım 🗓️</h1>
+        <h1 class="small-title" data-i18n="planTitle">Hadi Planlayalım 🗓️</h1>
 
-        <h2 class="section-label">Hangi gün? 📆</h2>
+        <h2 class="section-label" data-i18n="dayLabel">Hangi gün? 📆</h2>
         <div class="day-picker" id="day-picker"></div>
 
-        <h2 class="section-label">Saat kaçta? ⏰</h2>
-        <div class="option-grid" id="time-picker">
-          <button class="option-card" data-time="14:00" data-label="Kahve saati ☕">
-            <span class="option-emoji">☕</span>
-            <span>Kahve saati</span>
-            <span class="option-sub">14:00</span>
-          </button>
-          <button class="option-card" data-time="18:00" data-label="Gün batımı 🌅">
-            <span class="option-emoji">🌅</span>
-            <span>Gün batımı</span>
-            <span class="option-sub">18:00</span>
-          </button>
-          <button class="option-card" data-time="20:00" data-label="Akşam yemeği 🍝">
-            <span class="option-emoji">🍝</span>
-            <span>Akşam yemeği</span>
-            <span class="option-sub">20:00</span>
-          </button>
-        </div>
+        <h2 class="section-label" data-i18n="timeLabel">Saat kaçta? ⏰</h2>
+        <div class="option-grid" id="time-picker"></div>
 
-        <h2 class="section-label">Nereye gidelim? 📍</h2>
-        <div class="option-grid" id="place-picker">
-          <button class="option-card" data-place="Kahve ☕">
-            <span class="option-emoji">☕</span>
-            <span>Kahve</span>
-          </button>
-          <button class="option-card" data-place="Yemek 🍕">
-            <span class="option-emoji">🍕</span>
-            <span>Yemek</span>
-          </button>
-          <button class="option-card" data-place="Sinema 🎬">
-            <span class="option-emoji">🎬</span>
-            <span>Sinema</span>
-          </button>
-          <button class="option-card" data-place="Yürüyüş 🚶">
-            <span class="option-emoji">🚶</span>
-            <span>Yürüyüş</span>
-          </button>
-        </div>
+        <h2 class="section-label" data-i18n="placeLabel">Nereye gidelim? 📍</h2>
+        <div class="option-grid" id="place-picker"></div>
 
-        <button class="btn btn-primary" id="btn-confirm-plan" disabled>Randevuyu Onayla 🎫</button>
+        <button class="btn btn-primary" id="btn-confirm-plan" data-i18n="confirmBtn" disabled>Randevuyu Onayla 🎫</button>
       </div>
     </section>
 
@@ -143,24 +143,29 @@
     <section class="screen" id="screen-ticket">
       <canvas id="confetti-canvas-2"></canvas>
       <div class="card">
-        <h1 class="small-title">Randevumuz Ayarlandı! 🥳</h1>
+        <h1 class="small-title" data-i18n="ticketTitle">Randevumuz Ayarlandı! 🥳</h1>
 
-        <div class="ticket">
-          <div class="ticket-header">🎫 RANDEVU BİLETİ</div>
-          <div class="ticket-row"><span>📆 Tarih</span><strong id="ticket-date">-</strong></div>
-          <div class="ticket-row"><span>⏰ Saat</span><strong id="ticket-time">-</strong></div>
-          <div class="ticket-row"><span>📍 Mekan</span><strong id="ticket-place">-</strong></div>
+        <div class="countdown" id="countdown" aria-live="polite"></div>
+
+        <div class="ticket" id="ticket-capture">
+          <div class="ticket-header" data-i18n="ticketHeader">🎫 RANDEVU BİLETİ</div>
+          <div class="ticket-row"><span data-i18n="ticketDateLabel">📆 Tarih</span><strong id="ticket-date">-</strong></div>
+          <div class="ticket-row"><span data-i18n="ticketTimeLabel">⏰ Saat</span><strong id="ticket-time">-</strong></div>
+          <div class="ticket-row"><span data-i18n="ticketPlaceLabel">📍 Mekan</span><strong id="ticket-place">-</strong></div>
           <div class="ticket-divider">✂ • • • • • • • • • • • • • • • • • • • • ✂</div>
-          <div class="ticket-footer">İptal edilemez! 😌 Katılım zorunludur 💘</div>
+          <div class="ticket-footer" data-i18n="ticketFooter">İptal edilemez! 😌 Katılım zorunludur 💘</div>
         </div>
 
-        <button class="btn btn-whatsapp" id="btn-whatsapp">WhatsApp'tan Bildir 📲</button>
-        <button class="btn btn-secondary" id="btn-restart">Baştan Başla 🔄</button>
+        <button class="btn btn-whatsapp" id="btn-whatsapp" data-i18n="whatsappNotifyBtn">WhatsApp'tan Bildir 📲</button>
+        <button class="btn btn-secondary-solid" id="btn-download-ticket" data-i18n="downloadTicketBtn">Bileti İndir 📸</button>
+        <button class="btn btn-secondary" id="btn-restart" data-i18n="restartBtn">Baştan Başla 🔄</button>
       </div>
     </section>
 
   </main>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
